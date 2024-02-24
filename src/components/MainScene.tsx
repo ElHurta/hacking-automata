@@ -5,7 +5,10 @@ import {
   Vector3,
   HemisphericLight,
   MeshBuilder,
-} from "babylonjs";
+  SceneLoader,
+} from "@babylonjs/core";
+
+import "@babylonjs/loaders/glTF";
 
 export class MainScene {
   scene: Scene;
@@ -14,6 +17,7 @@ export class MainScene {
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
     this.scene = this.CreateNewScene();
+    this.CreateShip();
 
     this.engine.runRenderLoop(() => {
       this.scene.render();
@@ -43,9 +47,21 @@ export class MainScene {
       this.scene,
     );
 
-    const ball = MeshBuilder.CreateSphere("ball", { diameter: 1 }, this.scene);
-    ball.position.y = 1;
+    // const ball = MeshBuilder.CreateSphere("ball", { diameter: 1 }, this.scene);
+    // ball.position.y = 1;
 
     return scene;
+  }
+
+  CreateShip() : void {
+    SceneLoader.ImportMesh(
+        "",
+        "src/assets/models/",
+        "ship01.glb",
+        this.scene,
+        (meshes) => {
+            console.log(meshes);
+        }
+    );
   }
 }
