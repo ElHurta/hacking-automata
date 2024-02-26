@@ -6,6 +6,8 @@ import {
   HemisphericLight,
   MeshBuilder,
   SceneLoader,
+  ArcRotateCamera,
+  AbstractMesh,
 } from "@babylonjs/core";
 
 import "@babylonjs/loaders/glTF";
@@ -17,7 +19,18 @@ export class MainScene {
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
     this.scene = this.CreateNewScene();
-    this.CreateShip();
+
+    const camera = new ArcRotateCamera(
+      "camera",
+      -Math.PI / 2,
+      Math.PI / 6,
+      200,
+      new Vector3(0, 0, 0),
+      this.scene
+    );
+
+    this.CreateEnvironment();
+    this.CreateShip().then((ship) => this.AssignCamera(camera, ship));
 
     this.engine.runRenderLoop(() => {
       this.scene.render();
@@ -26,42 +39,45 @@ export class MainScene {
 
   CreateNewScene(): Scene {
     const scene = new Scene(this.engine);
-    const camera = new FreeCamera(
-      "camera1",
-      new Vector3(0, 5, -10),
-      this.scene,
-    );
-    camera.attachControl();
 
     const hemiLight = new HemisphericLight(
       "hemiLight",
-      new Vector3(0, 1, 0),
+      new Vector3(0, 5, 0),
       this.scene,
     );
 
-    hemiLight.intensity = 0.7;
-
-    const ground = MeshBuilder.CreateGround(
-      "ground",
-      { width: 6, height: 6 },
-      this.scene,
-    );
-
-    // const ball = MeshBuilder.CreateSphere("ball", { diameter: 1 }, this.scene);
-    // ball.position.y = 1;
+    hemiLight.intensity = 0.5;
 
     return scene;
   }
 
-  CreateShip() : void {
-    SceneLoader.ImportMesh(
-        "",
-        "src/assets/models/",
-        "ship01.glb",
-        this.scene,
-        (meshes) => {
-            console.log(meshes);
-        }
+  async CreateShip() : Promise<AbstractMesh> {
+
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "src/assets/models/",
+      "ship01.glb",
+      this.scene
     );
+
+    const shipMesh = meshes[0];
+
+    shipMesh.position.y = 1;
+    shipMesh.rotate(Vector3.Up(), Math.PI);
+
+    return shipMesh;
+  }
+
+  async CreateEnvironment() {
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "src/assets/levels/",
+      "testLevel.glb",
+      this.scene
+    );
+  }
+
+  async AssignCamera(camera : ArcRotateCamera , target: AbstractMesh) {
+    camera.setTarget(target);
   }
 }
