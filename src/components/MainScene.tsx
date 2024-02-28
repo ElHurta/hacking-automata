@@ -85,7 +85,7 @@ export class MainScene {
     gizmoManager.attachToMesh(lightGizmo.attachedMesh);
   }
 
-  async CreatePlayerMovement(playerMesh: AbstractMesh): Promise<void> {
+  CreatePlayerMovement(playerMesh: AbstractMesh): void {
     let keyStatus: IKeys = {
       w: false,
       a: false,
@@ -126,11 +126,12 @@ export class MainScene {
     });
 
     this.scene.onPointerMove = (_, pickInfo) => {
+      
       if (pickInfo.pickedPoint) {
         playerMesh.lookAt(pickInfo.pickedPoint);
-        playerMesh.rotation.x = 0;
-        playerMesh.rotation.z = 0;
       }
+      playerMesh.rotation.x = 0;
+      playerMesh.rotation.z = 0;
     }
   }
 
@@ -146,9 +147,10 @@ export class MainScene {
 
     const shipMesh = meshes[0];
     shipMesh.rotate(Vector3.Up(), Math.PI);
-    shipMesh.position.y = 1;
+    shipMesh.rotationQuaternion = null;
+    shipMesh.position.y = 3;
 
-    await this.CreatePlayerMovement(shipMesh);
+    this.CreatePlayerMovement(shipMesh);
 
     //Adding shadow to ship
     if (this.shadowGenerator) {
@@ -175,7 +177,7 @@ export class MainScene {
     );
 
     fakeGround.position.y = -1;
-    //fakeGround.enablePointerMoveEvents = true;
+    fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
   }
 
