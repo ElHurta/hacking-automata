@@ -1,10 +1,8 @@
 import {
   Scene,
   Engine,
-  FreeCamera,
   Vector3,
   HemisphericLight,
-  MeshBuilder,
   SceneLoader,
   ArcRotateCamera,
   AbstractMesh,
@@ -23,6 +21,7 @@ export class MainScene {
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
     this.scene = this.CreateNewScene();
+    this.scene.actionManager = new ActionManager(this.scene);
 
     const camera = new ArcRotateCamera(
       "camera",
@@ -38,7 +37,6 @@ export class MainScene {
         this.AssignCamera(camera, ship);
       });
     });
-    
 
     this.engine.runRenderLoop(() => {
       this.scene.render();
@@ -59,19 +57,13 @@ export class MainScene {
     return scene;
   }
 
-  async CreateShip(): Promise<AbstractMesh> {
-    const playerMoveSpeed = 0.5;
-    const playerRotateSpeed = 0.01;
-
+  async CreatePlayerMovement(playerMesh: AbstractMesh): Promise<void> {
     let keyStatus: IKeys = {
       w: false,
       a: false,
       s: false,
       d: false,
     };
-
-    //Creating scene action manager
-    this.scene.actionManager = new ActionManager(this.scene);
 
     //Adding keydown event
     this.scene.actionManager.registerAction(
@@ -93,6 +85,30 @@ export class MainScene {
       }),
     );
 
+    this.scene.onBeforeRenderObservable.add(() => {
+      if (keyStatus.w || keyStatus.d || keyStatus.a || keyStatus.s) {
+        playerMesh.moveWithCollisions(
+          new Vector3(
+            (keyStatus.d ? 1 : 0) - (keyStatus.a ? 1 : 0),
+            0,
+            (keyStatus.w ? 1 : 0) - (keyStatus.s ? 1 : 0),
+          ),
+        );
+      }
+    });
+
+    this.scene.onPointerMove = (evt, pickInfo) => {
+    
+      if (pickInfo.pickedPoint) {
+        playerMesh.lookAt(pickInfo.pickedPoint);
+        playerMesh.rotation.x = 0;
+        playerMesh.rotation.z = 0;
+      }
+    }
+  }
+
+  async CreateShip(): Promise<AbstractMesh> {
+
     //Creating ship mesh
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
@@ -102,20 +118,23 @@ export class MainScene {
     );
 
     const shipMesh = meshes[0];
+    shipMesh.rotate(Vector3.Up(), Math.PI);
+
+    await this.CreatePlayerMovement(shipMesh);
 
     shipMesh.position.y = 1;
-    shipMesh.rotate(Vector3.Up(), Math.PI);
 
     return shipMesh;
   }
 
   async CreateEnvironment() {
-    const { meshes } = await SceneLoader.ImportMeshAsync(
+    const level = await SceneLoader.ImportMeshAsync(
       "",
       "src/assets/levels/",
       "testLevel.glb",
       this.scene,
     );
+    level.meshes[1].enablePointerMoveEvents = true;
   }
 
   async AssignCamera(camera: ArcRotateCamera, target: AbstractMesh) {
