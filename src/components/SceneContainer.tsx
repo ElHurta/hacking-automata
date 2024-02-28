@@ -1,13 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MainScene } from "./MainScene";
 
 import "./SceneContainer.css";
 
 export default function SceneContainer() {
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+
   useEffect(() => {
-    const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+    setCanvas(document.getElementById("renderCanvas") as HTMLCanvasElement);
+    if (!canvas) return;
     new MainScene(canvas);
-  }, []);
+  }, [canvas]);
 
   return (
     <div className="canvasContainer">
