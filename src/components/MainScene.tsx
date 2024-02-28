@@ -9,6 +9,12 @@ import {
   Color4,
   ActionManager,
   ExecuteCodeAction,
+  DirectionalLight,
+  Light,
+  LightGizmo,
+  GizmoManager,
+  MeshBuilder,
+  ShadowGenerator,
 } from "@babylonjs/core";
 
 import "@babylonjs/loaders/glTF";
@@ -17,6 +23,7 @@ import { IKeys } from "../interfaces/keys.interface";
 export class MainScene {
   scene: Scene;
   engine: Engine;
+  shadowGenerator: ShadowGenerator | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
@@ -38,6 +45,8 @@ export class MainScene {
       });
     });
 
+    this.CreateLights();
+
     this.engine.runRenderLoop(() => {
       this.scene.render();
     });
@@ -46,15 +55,34 @@ export class MainScene {
   CreateNewScene(): Scene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
-    const hemiLight = new HemisphericLight(
-      "hemiLight",
-      new Vector3(0, 5, 0),
+    
+    return scene;
+  }
+
+  CreateLights(): void {
+    const dirLight = new DirectionalLight(
+      "dirLight",
+      new Vector3(0, -1, 0),
       this.scene,
     );
 
-    hemiLight.intensity = 0.5;
+    dirLight.intensity = 1;
+    this.shadowGenerator = new ShadowGenerator(1024, dirLight);
+    this.shadowGenerator.usePoissonSampling = true;
+    // this.shadowGenerator.useBlurCloseExponentialShadowMap = true;
+    // this.CreateGizmos(dirLight);
+  }
 
-    return scene;
+  CreateGizmos(customLight: Light) : void {
+    const lightGizmo = new LightGizmo();
+    lightGizmo.light = customLight;
+    lightGizmo.scaleRatio = 2;
+
+    const gizmoManager = new GizmoManager(this.scene);
+    gizmoManager.positionGizmoEnabled = true;
+    gizmoManager.rotationGizmoEnabled = true;
+    gizmoManager.usePointerToAttachGizmos = false;
+    gizmoManager.attachToMesh(lightGizmo.attachedMesh);
   }
 
   async CreatePlayerMovement(playerMesh: AbstractMesh): Promise<void> {
@@ -97,8 +125,7 @@ export class MainScene {
       }
     });
 
-    this.scene.onPointerMove = (evt, pickInfo) => {
-    
+    this.scene.onPointerMove = (_, pickInfo) => {
       if (pickInfo.pickedPoint) {
         playerMesh.lookAt(pickInfo.pickedPoint);
         playerMesh.rotation.x = 0;
@@ -119,10 +146,14 @@ export class MainScene {
 
     const shipMesh = meshes[0];
     shipMesh.rotate(Vector3.Up(), Math.PI);
+    shipMesh.position.y = 1;
 
     await this.CreatePlayerMovement(shipMesh);
 
-    shipMesh.position.y = 1;
+    //Adding shadow to ship
+    if (this.shadowGenerator) {
+      this.shadowGenerator.addShadowCaster(shipMesh);
+    }
 
     return shipMesh;
   }
@@ -135,6 +166,17 @@ export class MainScene {
       this.scene,
     );
     level.meshes[1].enablePointerMoveEvents = true;
+    level.meshes[1].receiveShadows = true;
+
+    const fakeGround = MeshBuilder.CreateGround(
+      "fakeGround",
+      { width: 1000, height: 1000 },
+      this.scene,
+    );
+
+    fakeGround.position.y = -1;
+    //fakeGround.enablePointerMoveEvents = true;
+    fakeGround.visibility = 0;
   }
 
   async AssignCamera(camera: ArcRotateCamera, target: AbstractMesh) {
