@@ -55,25 +55,31 @@ export class MainScene {
   CreateNewScene(): Scene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
-    
+
     return scene;
   }
 
   CreateLights(): void {
-    const dirLight = new DirectionalLight(
-      "dirLight",
-      new Vector3(0, -1, 0),
+    // const dirLight = new DirectionalLight(
+    //   "dirLight",
+    //   new Vector3(0, -1, 0),
+    //   this.scene,
+    // );
+
+    const hemiLight = new HemisphericLight(
+      "hemiLight",
+      new Vector3(0, 1, 0),
       this.scene,
     );
 
-    dirLight.intensity = 1;
-    this.shadowGenerator = new ShadowGenerator(1024, dirLight);
-    this.shadowGenerator.usePoissonSampling = true;
-    // this.shadowGenerator.useBlurCloseExponentialShadowMap = true;
+    hemiLight.intensity = 0.4;
+    //this.shadowGenerator = new ShadowGenerator(1024, hemiLight);
+    //this.shadowGenerator.usePoissonSampling = true;
+    //this.shadowGenerator.useBlurExponentialShadowMap = true;
     // this.CreateGizmos(dirLight);
   }
 
-  CreateGizmos(customLight: Light) : void {
+  CreateGizmos(customLight: Light): void {
     const lightGizmo = new LightGizmo();
     lightGizmo.light = customLight;
     lightGizmo.scaleRatio = 2;
@@ -91,14 +97,20 @@ export class MainScene {
       a: false,
       s: false,
       d: false,
+      space: false,
     };
 
     //Adding keydown event
     this.scene.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
         let key = evt.sourceEvent.key.toLowerCase();
+
         if (key in keyStatus) {
           keyStatus[key] = true;
+        }
+
+        if (key === " ") {
+          keyStatus.space = true;
         }
       }),
     );
@@ -109,6 +121,9 @@ export class MainScene {
         let key = evt.sourceEvent.key.toLowerCase();
         if (key in keyStatus) {
           keyStatus[key] = false;
+        }
+        if (key === " ") {
+          keyStatus.space = false;
         }
       }),
     );
@@ -123,20 +138,22 @@ export class MainScene {
           ),
         );
       }
+
+      if (keyStatus.space) {
+        // console.log(playerMesh.forward)
+      }
     });
 
     this.scene.onPointerMove = (_, pickInfo) => {
-      
       if (pickInfo.pickedPoint) {
         playerMesh.lookAt(pickInfo.pickedPoint);
       }
       playerMesh.rotation.x = 0;
       playerMesh.rotation.z = 0;
-    }
+    };
   }
 
   async CreateShip(): Promise<AbstractMesh> {
-
     //Creating ship mesh
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
@@ -154,7 +171,7 @@ export class MainScene {
 
     //Adding shadow to ship
     if (this.shadowGenerator) {
-      this.shadowGenerator.addShadowCaster(shipMesh);
+      //this.shadowGenerator.addShadowCaster(meshes[1]);
     }
 
     return shipMesh;
