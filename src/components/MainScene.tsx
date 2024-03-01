@@ -15,6 +15,7 @@ import {
   GizmoManager,
   MeshBuilder,
   ShadowGenerator,
+  GlowLayer,
 } from "@babylonjs/core";
 
 import "@babylonjs/loaders/glTF";
@@ -45,6 +46,8 @@ export class MainScene {
       });
     });
 
+    this.CreateBullet();
+
     this.CreateLights();
 
     this.engine.runRenderLoop(() => {
@@ -55,6 +58,8 @@ export class MainScene {
   CreateNewScene(): Scene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
+    const gl = new GlowLayer("glow", scene);
+    gl.intensity = 0.5;
 
     return scene;
   }
@@ -175,6 +180,20 @@ export class MainScene {
     }
 
     return shipMesh;
+  }
+
+
+  async CreateBullet() : Promise<AbstractMesh> {
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "src/assets/models/",
+      "bullet01.glb",
+      this.scene,
+    );
+
+    const bulletMesh = meshes[0];
+    bulletMesh.position.y = 3;
+    return bulletMesh;
   }
 
   async CreateEnvironment() {
