@@ -17,6 +17,9 @@ import {
   ShadowGenerator,
   GlowLayer,
 } from "@babylonjs/core";
+import "@babylonjs/core/Physics/physicsEngineComponent";
+import { havokModule } from "../externals/havok";
+import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 
 import "@babylonjs/loaders/glTF";
 import { IKeys } from "../interfaces/keys.interface";
@@ -27,6 +30,7 @@ export class MainScene {
   shadowGenerator: ShadowGenerator | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
+    // preTasks = [havokModule];
     this.engine = new Engine(canvas, true);
     this.scene = this.CreateNewScene();
     this.scene.actionManager = new ActionManager(this.scene);
@@ -61,6 +65,10 @@ export class MainScene {
     const gl = new GlowLayer("glow", scene);
     gl.intensity = 0.5;
 
+    havokModule.then((havokModule) =>
+      scene.enablePhysics(null, new HavokPlugin(true, havokModule))
+    );
+
     return scene;
   }
 
@@ -81,7 +89,7 @@ export class MainScene {
     //this.shadowGenerator = new ShadowGenerator(1024, hemiLight);
     //this.shadowGenerator.usePoissonSampling = true;
     //this.shadowGenerator.useBlurExponentialShadowMap = true;
-    // this.CreateGizmos(dirLight);
+    //this.CreateGizmos(hemiLight);
   }
 
   CreateGizmos(customLight: Light): void {
@@ -182,8 +190,7 @@ export class MainScene {
     return shipMesh;
   }
 
-
-  async CreateBullet() : Promise<AbstractMesh> {
+  async CreateBullet(): Promise<AbstractMesh> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
       "src/assets/models/",
