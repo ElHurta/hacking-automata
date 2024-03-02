@@ -15,22 +15,35 @@ import {
   MeshBuilder,
   ShadowGenerator,
   GlowLayer,
+  PhysicsViewer,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
-
 import "@babylonjs/loaders/glTF";
+import "@babylonjs/core/Debug/debugLayer";
+import { havokModule } from "../externals/havok";
+import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
+import { Inspector } from "@babylonjs/inspector";
+
 import { IKeys } from "../interfaces/keys.interface";
+import BulletController from "./controllers/BulletController";
 
 export class MainScene {
   scene!: Scene;
   engine: Engine;
+  bulletController: BulletController;
   shadowGenerator: ShadowGenerator | undefined;
+  physicsViewer: PhysicsViewer;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
+    this.physicsViewer = new PhysicsViewer();
+    this.bulletController = new BulletController(
+      this.scene,
+      this.physicsViewer,
+    );
+
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
-
       this.scene.actionManager = new ActionManager(this.scene);
 
       const camera = new ArcRotateCamera(
@@ -48,8 +61,6 @@ export class MainScene {
         });
       });
 
-      this.CreateBullet();
-
       this.CreateLights();
 
       this.engine.runRenderLoop(() => {
@@ -63,6 +74,12 @@ export class MainScene {
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
     gl.intensity = 0.5;
+
+    scene.enablePhysics(
+      new Vector3(0, 0, 0),
+      new HavokPlugin(true, await havokModule),
+    );
+    // Inspector.Show(scene, {});
 
     return scene;
   }
@@ -140,18 +157,15 @@ export class MainScene {
       if (keyStatus.w || keyStatus.d || keyStatus.a || keyStatus.s) {
         playerMesh.moveWithCollisions(
           new Vector3(
-            (keyStatus.d ? 1 : 0) - (keyStatus.a ? 1 : 0),
+            (keyStatus.d ? 0.7 : 0) - (keyStatus.a ? 0.7 : 0),
             0,
-            (keyStatus.w ? 1 : 0) - (keyStatus.s ? 1 : 0),
+            (keyStatus.w ? 0.7 : 0) - (keyStatus.s ? 0.7 : 0),
           ),
         );
       }
 
       if (keyStatus.space) {
-        playerMesh.position.y -= 0.1;
-        if (playerMesh.intersectsMesh(this.scene.getMeshByName("fakeGround")!))
-          console.log("Intersecting");
-        // console.log(playerMesh.forward)
+        this.bulletController.ShootBullet(playerMesh);
       }
     });
 
@@ -162,6 +176,10 @@ export class MainScene {
       playerMesh.rotation.x = 0;
       playerMesh.rotation.z = 0;
     };
+
+    // this.scene.onPointerDown = () => {
+
+    // };
   }
 
   async CreateShip(): Promise<AbstractMesh> {
@@ -182,23 +200,10 @@ export class MainScene {
 
     //Adding shadow to ship
     if (this.shadowGenerator) {
-      //this.shadowGenerator.addShadowCaster(meshes[1]);
+      this.shadowGenerator.addShadowCaster(meshes[1]);
     }
 
     return shipMesh;
-  }
-
-  async CreateBullet(): Promise<AbstractMesh> {
-    const { meshes } = await SceneLoader.ImportMeshAsync(
-      "",
-      "src/assets/models/",
-      "bullet01.glb",
-      this.scene,
-    );
-
-    const bulletMesh = meshes[0];
-    bulletMesh.position.y = 3;
-    return bulletMesh;
   }
 
   async CreateEnvironment() {
@@ -208,7 +213,7 @@ export class MainScene {
       "testLevel.glb",
       this.scene,
     );
-    level.meshes[1].enablePointerMoveEvents = true;
+    // level.meshes[1].enablePointerMoveEvents = true;
     level.meshes[1].receiveShadows = true;
 
     const fakeGround = MeshBuilder.CreateGround(
