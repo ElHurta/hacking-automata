@@ -43,6 +43,7 @@ export default class BulletController {
 
     // Set Bullet spawn position at the tip of the ship
     bulletMesh.position = playerPosition.add(playerMesh.forward.scale(-3));
+    bulletMesh.position.y -= 0.5;
     bulletMesh.rotation = playerMesh.rotation.clone();
 
     const bullletAggregate = new PhysicsAggregate(
