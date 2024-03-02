@@ -7,10 +7,8 @@ export default defineConfig({
   server: {
     fs: {
       // Allow serving files outside of the root
-      allow: [
-        "../.."
-      ]
-    }
+      allow: ["../.."],
+    },
   },
   optimizeDeps: { exclude: ["@babylonjs/havok"] },
 });

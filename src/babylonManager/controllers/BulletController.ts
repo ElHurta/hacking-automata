@@ -5,7 +5,6 @@ import {
   PhysicsViewer,
   Scene,
   SceneLoader,
-  Vector3,
 } from "@babylonjs/core";
 
 export default class BulletController {
@@ -41,6 +40,7 @@ export default class BulletController {
 
     const bulletMesh = meshes[0];
     const playerPosition = playerMesh.position.clone();
+
     // Set Bullet spawn position at the tip of the ship
     bulletMesh.position = playerPosition.add(playerMesh.forward.scale(-3));
     bulletMesh.rotation = playerMesh.rotation.clone();
