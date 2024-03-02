@@ -16,6 +16,7 @@ import {
   ShadowGenerator,
   GlowLayer,
   PhysicsViewer,
+  PointerEventTypes,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
@@ -73,7 +74,7 @@ export class MainScene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
-    gl.intensity = 0.5;
+    gl.intensity = 0.7;
 
     scene.enablePhysics(
       new Vector3(0, 0, 0),
@@ -176,10 +177,6 @@ export class MainScene {
       playerMesh.rotation.x = 0;
       playerMesh.rotation.z = 0;
     };
-
-    // this.scene.onPointerDown = () => {
-
-    // };
   }
 
   async CreateShip(): Promise<AbstractMesh> {
@@ -194,7 +191,7 @@ export class MainScene {
     const shipMesh = meshes[0];
     shipMesh.rotate(Vector3.Up(), Math.PI);
     shipMesh.rotationQuaternion = null;
-    shipMesh.position.y = 3;
+    shipMesh.position.y = 15;
 
     this.CreatePlayerMovement(shipMesh);
 

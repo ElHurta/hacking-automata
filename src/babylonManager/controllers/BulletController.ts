@@ -12,7 +12,7 @@ export default class BulletController {
     private scene: Scene,
     private physicsViewer: PhysicsViewer,
     private lastShot = 0,
-    private shootDelay = 180,
+    private shootDelay = 150,
   ) {}
 
   ShootBullet(playerMesh: AbstractMesh) {
@@ -20,7 +20,7 @@ export default class BulletController {
       this.lastShot = Date.now();
 
       this.CreateBullet(playerMesh).then((bullet) => {
-        bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-300));
+        bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-400));
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
