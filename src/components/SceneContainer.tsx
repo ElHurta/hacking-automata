@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MainScene } from "./MainScene";
+import { AppManager } from "../babylonManager/AppManager";
 
 import "./SceneContainer.css";
 
@@ -9,7 +9,7 @@ export default function SceneContainer() {
   useEffect(() => {
     setCanvas(document.getElementById("renderCanvas") as HTMLCanvasElement);
     if (!canvas) return;
-    new MainScene(canvas);
+    new AppManager(canvas);
   }, [canvas]);
 
   return (

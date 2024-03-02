@@ -27,7 +27,6 @@ export class MainScene {
   shadowGenerator: ShadowGenerator | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
-    // preTasks = [havokModule];
     this.engine = new Engine(canvas, true);
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
