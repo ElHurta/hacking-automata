@@ -9,7 +9,6 @@ import {
   Color4,
   ActionManager,
   ExecuteCodeAction,
-  DirectionalLight,
   Light,
   LightGizmo,
   GizmoManager,
@@ -18,56 +17,53 @@ import {
   GlowLayer,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
-import { havokModule } from "../externals/havok";
-import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 
 import "@babylonjs/loaders/glTF";
 import { IKeys } from "../interfaces/keys.interface";
 
 export class MainScene {
-  scene: Scene;
+  scene!: Scene;
   engine: Engine;
   shadowGenerator: ShadowGenerator | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
     // preTasks = [havokModule];
     this.engine = new Engine(canvas, true);
-    this.scene = this.CreateNewScene();
-    this.scene.actionManager = new ActionManager(this.scene);
+    this.CreateNewScene().then((scene) => {
+      this.scene = scene;
 
-    const camera = new ArcRotateCamera(
-      "camera",
-      -Math.PI / 2,
-      Math.PI / 6,
-      200,
-      new Vector3(0, 0, 0),
-      this.scene,
-    );
+      this.scene.actionManager = new ActionManager(this.scene);
 
-    this.CreateEnvironment().then(() => {
-      this.CreateShip().then((ship) => {
-        this.AssignCamera(camera, ship);
+      const camera = new ArcRotateCamera(
+        "camera",
+        -Math.PI / 2,
+        Math.PI / 6,
+        200,
+        new Vector3(0, 0, 0),
+        this.scene,
+      );
+
+      this.CreateEnvironment().then(() => {
+        this.CreateShip().then((ship) => {
+          this.AssignCamera(camera, ship);
+        });
       });
-    });
 
-    this.CreateBullet();
+      this.CreateBullet();
 
-    this.CreateLights();
+      this.CreateLights();
 
-    this.engine.runRenderLoop(() => {
-      this.scene.render();
+      this.engine.runRenderLoop(() => {
+        this.scene.render();
+      });
     });
   }
 
-  CreateNewScene(): Scene {
+  async CreateNewScene(): Promise<Scene> {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
     gl.intensity = 0.5;
-
-    havokModule.then((havokModule) =>
-      scene.enablePhysics(null, new HavokPlugin(true, havokModule))
-    );
 
     return scene;
   }
@@ -105,7 +101,7 @@ export class MainScene {
   }
 
   CreatePlayerMovement(playerMesh: AbstractMesh): void {
-    let keyStatus: IKeys = {
+    const keyStatus: IKeys = {
       w: false,
       a: false,
       s: false,
@@ -116,7 +112,7 @@ export class MainScene {
     //Adding keydown event
     this.scene.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
-        let key = evt.sourceEvent.key.toLowerCase();
+        const key = evt.sourceEvent.key.toLowerCase();
 
         if (key in keyStatus) {
           keyStatus[key] = true;
@@ -131,7 +127,7 @@ export class MainScene {
     //Adding keyup event
     this.scene.actionManager.registerAction(
       new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
-        let key = evt.sourceEvent.key.toLowerCase();
+        const key = evt.sourceEvent.key.toLowerCase();
         if (key in keyStatus) {
           keyStatus[key] = false;
         }
@@ -153,6 +149,9 @@ export class MainScene {
       }
 
       if (keyStatus.space) {
+        playerMesh.position.y -= 0.1;
+        if (playerMesh.intersectsMesh(this.scene.getMeshByName("fakeGround")!))
+          console.log("Intersecting");
         // console.log(playerMesh.forward)
       }
     });
