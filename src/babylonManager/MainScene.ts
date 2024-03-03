@@ -24,7 +24,7 @@ import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
 import { havokModule } from "../externals/havok";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
-// import { Inspector } from "@babylonjs/inspector";
+import { Inspector } from "@babylonjs/inspector";
 
 import { IKeys } from "../interfaces/keys.interface";
 import BulletController from "./controllers/BulletController";
@@ -81,7 +81,7 @@ export class MainScene {
       this.scene,
       this.physicsViewer,
     );
-    // Inspector.Show(scene, {});
+    Inspector.Show(scene, {});
 
     return scene;
   }
@@ -191,8 +191,14 @@ export class MainScene {
 
     const shipMesh = meshes[0];
     shipMesh.rotate(Vector3.Up(), Math.PI);
-    shipMesh.rotationQuaternion = null;
+
     shipMesh.position.y = 15;
+
+    //Adding collisions to ship
+    shipMesh.checkCollisions = true;
+    shipMesh.ellipsoid = new Vector3(3, 1, 3);
+
+    shipMesh.rotationQuaternion = null;
 
     this.CreatePlayerMovement(shipMesh);
 
@@ -221,9 +227,11 @@ export class MainScene {
           PhysicsShapeType.BOX,
           {
             mass: 0,
+            restitution: 0.9,
           },
           this.scene,
         );
+        element.checkCollisions = true;
       }
     });
 
