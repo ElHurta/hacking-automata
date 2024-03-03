@@ -1,6 +1,7 @@
 import {
   AbstractMesh,
   PhysicsAggregate,
+  PhysicsEventType,
   PhysicsShapeType,
   PhysicsViewer,
   Scene,
@@ -21,6 +22,15 @@ export default class BulletController {
 
       this.CreateBullet(playerMesh).then((bullet) => {
         bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-400));
+
+        const observable = bullet.getPhysicsBody()?.getCollisionObservable();
+        if (observable) {
+          observable.add((collisionEvent) => {
+            if (collisionEvent.type === PhysicsEventType.COLLISION_STARTED) {
+              bullet.dispose();
+            }
+          });
+        }
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
@@ -56,6 +66,7 @@ export default class BulletController {
     );
 
     bullletAggregate.body.disablePreStep = false;
+    bullletAggregate.body.setCollisionCallbackEnabled(true);
 
     this.physicsViewer.showBody(bullletAggregate.body);
 

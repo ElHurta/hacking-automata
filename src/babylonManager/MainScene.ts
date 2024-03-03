@@ -16,14 +16,15 @@ import {
   ShadowGenerator,
   GlowLayer,
   PhysicsViewer,
-  PointerEventTypes,
+  PhysicsAggregate,
+  PhysicsShapeType,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
 import { havokModule } from "../externals/havok";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
-import { Inspector } from "@babylonjs/inspector";
+// import { Inspector } from "@babylonjs/inspector";
 
 import { IKeys } from "../interfaces/keys.interface";
 import BulletController from "./controllers/BulletController";
@@ -31,17 +32,14 @@ import BulletController from "./controllers/BulletController";
 export class MainScene {
   scene!: Scene;
   engine: Engine;
-  bulletController: BulletController;
+  bulletController!: BulletController;
   shadowGenerator: ShadowGenerator | undefined;
   physicsViewer: PhysicsViewer;
+  havokPlugin: HavokPlugin | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
     this.physicsViewer = new PhysicsViewer();
-    this.bulletController = new BulletController(
-      this.scene,
-      this.physicsViewer,
-    );
 
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
@@ -74,11 +72,14 @@ export class MainScene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
-    gl.intensity = 0.7;
+    gl.intensity = 0.3;
+    this.havokPlugin = new HavokPlugin(true, await havokModule);
 
-    scene.enablePhysics(
-      new Vector3(0, 0, 0),
-      new HavokPlugin(true, await havokModule),
+    scene.enablePhysics(new Vector3(0, 0, 0), this.havokPlugin);
+
+    this.bulletController = new BulletController(
+      this.scene,
+      this.physicsViewer,
     );
     // Inspector.Show(scene, {});
 
@@ -98,7 +99,7 @@ export class MainScene {
       this.scene,
     );
 
-    hemiLight.intensity = 0.4;
+    hemiLight.intensity = 0.6;
     //this.shadowGenerator = new ShadowGenerator(1024, hemiLight);
     //this.shadowGenerator.usePoissonSampling = true;
     //this.shadowGenerator.useBlurExponentialShadowMap = true;
@@ -210,8 +211,21 @@ export class MainScene {
       "testLevel.glb",
       this.scene,
     );
-    // level.meshes[1].enablePointerMoveEvents = true;
+
     level.meshes[1].receiveShadows = true;
+
+    level.meshes.forEach((element) => {
+      if (element.name.includes("UndestructibleBlock")) {
+        new PhysicsAggregate(
+          element,
+          PhysicsShapeType.BOX,
+          {
+            mass: 0,
+          },
+          this.scene,
+        );
+      }
+    });
 
     const fakeGround = MeshBuilder.CreateGround(
       "fakeGround",
