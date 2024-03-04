@@ -21,7 +21,7 @@ export default class BulletController {
       this.lastShot = Date.now();
 
       this.CreateBullet(playerMesh).then((bullet) => {
-        bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-400));
+        bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-800));
 
         const observable = bullet.getPhysicsBody()?.getCollisionObservable();
         if (observable) {
@@ -53,7 +53,7 @@ export default class BulletController {
 
     // Set Bullet spawn position at the tip of the ship
     bulletMesh.position = playerPosition.add(playerMesh.forward.scale(-3));
-    bulletMesh.position.y -= 0.5;
+    //bulletMesh.position.y -= 0.5;
     bulletMesh.rotation = playerMesh.rotation.clone();
 
     const bullletAggregate = new PhysicsAggregate(

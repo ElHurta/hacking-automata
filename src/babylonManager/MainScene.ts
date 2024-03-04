@@ -81,7 +81,7 @@ export class MainScene {
       this.scene,
       this.physicsViewer,
     );
-    Inspector.Show(scene, {});
+    // Inspector.Show(scene, {});
 
     return scene;
   }
@@ -241,7 +241,7 @@ export class MainScene {
       this.scene,
     );
 
-    fakeGround.position.y = -1;
+    fakeGround.position.y = 14;
     fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
   }
