@@ -233,6 +233,11 @@ export class MainScene {
         );
         element.checkCollisions = true;
       }
+
+      if (element.name.includes("Walls")) {
+        element.checkCollisions = true;
+        element.visibility = 0;
+      }
     });
 
     const fakeGround = MeshBuilder.CreateGround(
