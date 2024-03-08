@@ -27,6 +27,7 @@ import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 
 import BulletController from "./controllers/BulletController";
 import PlayerController from "./controllers/PlayerController";
+import EnemyController from "./controllers/EnemyController";
 
 export class MainScene {
   scene!: Scene;
@@ -35,6 +36,8 @@ export class MainScene {
   physicsViewer: PhysicsViewer;
   havokPlugin: HavokPlugin | undefined;
   playerController!: PlayerController;
+  player: AbstractMesh | undefined;
+  enemyController: EnemyController | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
@@ -49,7 +52,12 @@ export class MainScene {
         new BulletController(this.scene, this.physicsViewer),
         this.shadowGenerator,
       );
-      
+
+      this.enemyController = new EnemyController(
+        this.scene,
+        this.playerController,
+      );
+
       const camera = new ArcRotateCamera(
         "camera",
         -Math.PI / 2,
@@ -61,8 +69,10 @@ export class MainScene {
 
       this.CreateEnvironment().then(() => {
         this.playerController.CreateShip().then((ship) => {
+          this.player = ship;
           this.AssignCamera(camera, ship);
         });
+        this.enemyController?.CreateEnemy();
       });
 
       this.CreateLights();

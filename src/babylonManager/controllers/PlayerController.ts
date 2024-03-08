@@ -10,6 +10,8 @@ import {
 } from "@babylonjs/core";
 import { IKeys } from "../../interfaces/keys.interface";
 import BulletController from "./BulletController";
+import * as YUKA from "yuka";
+import { syncPosition } from "../../utils/setRenderer";
 
 export default class PlayerController {
   constructor(
@@ -17,6 +19,7 @@ export default class PlayerController {
     private physicsViewer: PhysicsViewer,
     private bulletController: BulletController,
     private shadowGenerator: ShadowGenerator | undefined,
+    private playerMovingEntity: YUKA.MovingEntity = new YUKA.MovingEntity(),
   ) {}
 
   CreatePlayerMovement(playerMesh: AbstractMesh): void {
@@ -65,6 +68,12 @@ export default class PlayerController {
             (keyStatus.w ? 0.7 : 0) - (keyStatus.s ? 0.7 : 0),
           ),
         );
+
+        this.playerMovingEntity.position.set(
+          playerMesh.position.x,
+          playerMesh.position.y,
+          playerMesh.position.z,
+        );
       }
 
       if (keyStatus.space) {
@@ -106,6 +115,8 @@ export default class PlayerController {
 
     shipMesh.rotationQuaternion = null;
 
+    this.playerMovingEntity.setRenderComponent(shipMesh, syncPosition);
+
     this.CreatePlayerMovement(shipMesh);
 
     //Adding shadow to ship
@@ -114,5 +125,9 @@ export default class PlayerController {
     }
 
     return shipMesh;
+  }
+
+  getMovingEntity(): YUKA.MovingEntity {
+    return this.playerMovingEntity;
   }
 }
