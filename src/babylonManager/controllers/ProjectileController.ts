@@ -15,25 +15,29 @@ export default class ProjectileController {
   ) {}
 
   shootProjectile(shooter: AbstractMesh, projectile: Projectile) {
-    if (Date.now() - this.lastShot > projectile.SHOOTING_DELAY) {
+    if (Date.now() - this.lastShot > projectile.shootingDelay) {
       this.lastShot = Date.now();
 
-      this.createProjectile(shooter, projectile).then((bullet) => {
-        bullet.physicsBody?.setLinearVelocity(shooter.forward.scale(-800));
+      this.createProjectile(shooter, projectile).then((projectileMesh) => {
+        projectileMesh.physicsBody?.setLinearVelocity(
+          shooter.forward.scale(-projectile.speed),
+        );
 
-        const observable = bullet.getPhysicsBody()?.getCollisionObservable();
+        const observable = projectileMesh
+          .getPhysicsBody()
+          ?.getCollisionObservable();
         if (observable) {
           observable.add((collisionEvent) => {
             if (collisionEvent.type === PhysicsEventType.COLLISION_STARTED) {
-              bullet.dispose();
+              projectileMesh.dispose();
             }
           });
         }
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
-          bullet.dispose();
-        }, 3000);
+          projectileMesh.dispose();
+        }, projectile.disposeTime);
       });
     }
   }
