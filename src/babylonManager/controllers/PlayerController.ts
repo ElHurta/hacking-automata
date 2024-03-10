@@ -1,28 +1,50 @@
 import {
   AbstractMesh,
   ActionManager,
+  ArcRotateCamera,
   ExecuteCodeAction,
-  PhysicsViewer,
   Scene,
-  ShadowGenerator,
-  Vector3,
   SceneLoader,
+  Vector3,
 } from "@babylonjs/core";
 import { IKeys } from "../../interfaces/keys.interface";
+
+import Player from "../Entities/Player";
+
 import BulletController from "./BulletController";
-import * as YUKA from "yuka";
-import { syncPosition } from "../../utils/setRenderer";
+import { MovingEntity } from "yuka";
 
 export default class PlayerController {
   constructor(
     private scene: Scene,
-    private physicsViewer: PhysicsViewer,
     private bulletController: BulletController,
-    private shadowGenerator: ShadowGenerator | undefined,
-    private playerMovingEntity: YUKA.MovingEntity = new YUKA.MovingEntity(),
-  ) {}
+    private player: Player = new Player(scene),
+  ) {
+    this.CreateMesh().then((mesh) => {
+      this.player.mesh = mesh;
+      this.AddPlayerMovement();
+    });
+  }
 
-  CreatePlayerMovement(playerMesh: AbstractMesh): void {
+  async CreateMesh(): Promise<AbstractMesh> {
+    //Creating ship mesh
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      import.meta.env.VITE_MODELS_PATH,
+      import.meta.env.VITE_DEFAULT_PLAYER_MODEL,
+      this.scene,
+    );
+
+    const shipMesh = meshes[0];
+
+    shipMesh.position.y = 15;
+    shipMesh.rotate(Vector3.Up(), Math.PI);
+    shipMesh.rotationQuaternion = null;
+
+    return shipMesh;
+  }
+
+  AddPlayerMovement(): void {
     const keyStatus: IKeys = {
       w: false,
       a: false,
@@ -61,73 +83,42 @@ export default class PlayerController {
 
     this.scene.onBeforeRenderObservable.add(() => {
       if (keyStatus.w || keyStatus.d || keyStatus.a || keyStatus.s) {
-        playerMesh.moveWithCollisions(
+        this.player.mesh.moveWithCollisions(
           new Vector3(
-            (keyStatus.d ? 0.7 : 0) - (keyStatus.a ? 0.7 : 0),
+            (keyStatus.d ? this.player.MOVEMENT_SPEED : 0) -
+              (keyStatus.a ? this.player.MOVEMENT_SPEED : 0),
             0,
-            (keyStatus.w ? 0.7 : 0) - (keyStatus.s ? 0.7 : 0),
+            (keyStatus.w ? this.player.MOVEMENT_SPEED : 0) -
+              (keyStatus.s ? this.player.MOVEMENT_SPEED : 0),
           ),
         );
 
-        this.playerMovingEntity.position.set(
-          playerMesh.position.x,
-          playerMesh.position.y,
-          playerMesh.position.z,
+        this.player.movingEntity.position.set(
+          this.player.mesh.position.x,
+          this.player.mesh.position.y,
+          this.player.mesh.position.z,
         );
       }
 
       if (keyStatus.space) {
-        this.bulletController.ShootBullet(playerMesh);
+        this.bulletController.ShootBullet(this.player.mesh);
       }
     });
 
     this.scene.onPointerMove = (_, pickInfo) => {
       if (pickInfo.pickedPoint) {
-        playerMesh.lookAt(pickInfo.pickedPoint);
+        this.player.mesh.lookAt(pickInfo.pickedPoint);
       }
-      playerMesh.rotation.x = 0;
-      playerMesh.rotation.z = 0;
+      this.player.mesh.rotation.x = 0;
+      this.player.mesh.rotation.z = 0;
     };
   }
 
-  async CreateShip(): Promise<AbstractMesh> {
-    //Creating ship mesh
-    const { meshes } = await SceneLoader.ImportMeshAsync(
-      "",
-      "src/assets/models/",
-      "ship01.glb",
-      this.scene,
-    );
-
-    this.bulletController = new BulletController(
-      this.scene,
-      this.physicsViewer,
-    );
-
-    const shipMesh = meshes[0];
-    shipMesh.rotate(Vector3.Up(), Math.PI);
-
-    shipMesh.position.y = 15;
-
-    //Adding collisions to ship
-    shipMesh.checkCollisions = true;
-    shipMesh.ellipsoid = new Vector3(3, 1, 3);
-
-    shipMesh.rotationQuaternion = null;
-
-    this.playerMovingEntity.setRenderComponent(shipMesh, syncPosition);
-
-    this.CreatePlayerMovement(shipMesh);
-
-    //Adding shadow to ship
-    if (this.shadowGenerator) {
-      this.shadowGenerator.addShadowCaster(meshes[1]);
-    }
-
-    return shipMesh;
+  async AssignCameraToPlayer(camera: ArcRotateCamera) {
+    camera.setTarget(this.player.mesh, true);
   }
 
-  getMovingEntity(): YUKA.MovingEntity {
-    return this.playerMovingEntity;
+  public get playerMovingEntity(): MovingEntity {
+    return this.player.movingEntity;
   }
 }

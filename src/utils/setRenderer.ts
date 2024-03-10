@@ -10,13 +10,9 @@ export function syncPosition(
     0,
     entity.rotation.w,
   );
-  
-  if (mesh.collider?.collidedMesh){
-    entity.position.set(
-      mesh.position.x,
-      mesh.position.y,
-      mesh.position.z,
-    );
+
+  if (mesh.collider?.collidedMesh) {
+    entity.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
   }
 
   mesh.moveWithCollisions(

@@ -54,7 +54,7 @@ export default class EnemyController {
 
     this.CreateEnemyMovement(
       enemyMesh,
-      this.playerController.getMovingEntity(),
+      this.playerController.playerMovingEntity,
     );
   }
 }

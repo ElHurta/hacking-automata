@@ -5,7 +5,6 @@ import {
   HemisphericLight,
   SceneLoader,
   ArcRotateCamera,
-  AbstractMesh,
   Color4,
   ActionManager,
   Light,
@@ -36,7 +35,6 @@ export class MainScene {
   physicsViewer: PhysicsViewer;
   havokPlugin: HavokPlugin | undefined;
   playerController!: PlayerController;
-  player: AbstractMesh | undefined;
   enemyController: EnemyController | undefined;
 
   constructor(private canvas: HTMLCanvasElement) {
@@ -48,9 +46,7 @@ export class MainScene {
       this.scene.actionManager = new ActionManager(this.scene);
       this.playerController = new PlayerController(
         this.scene,
-        this.physicsViewer,
-        new BulletController(this.scene, this.physicsViewer),
-        this.shadowGenerator,
+        new BulletController(this.scene),
       );
 
       this.enemyController = new EnemyController(
@@ -68,10 +64,7 @@ export class MainScene {
       );
 
       this.CreateEnvironment().then(() => {
-        this.playerController.CreateShip().then((ship) => {
-          this.player = ship;
-          this.AssignCamera(camera, ship);
-        });
+        this.playerController.AssignCameraToPlayer(camera);
         this.enemyController?.CreateEnemy();
       });
 
@@ -167,9 +160,5 @@ export class MainScene {
     fakeGround.position.y = 14;
     fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
-  }
-
-  async AssignCamera(camera: ArcRotateCamera, target: AbstractMesh) {
-    camera.setTarget(target);
   }
 }

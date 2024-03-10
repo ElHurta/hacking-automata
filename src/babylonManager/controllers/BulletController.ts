@@ -3,7 +3,6 @@ import {
   PhysicsAggregate,
   PhysicsEventType,
   PhysicsShapeType,
-  PhysicsViewer,
   Scene,
   SceneLoader,
 } from "@babylonjs/core";
@@ -11,7 +10,6 @@ import {
 export default class BulletController {
   constructor(
     private scene: Scene,
-    private physicsViewer: PhysicsViewer,
     private lastShot = 0,
     private shootDelay = 150,
   ) {}
@@ -67,8 +65,6 @@ export default class BulletController {
 
     bullletAggregate.body.disablePreStep = false;
     bullletAggregate.body.setCollisionCallbackEnabled(true);
-
-    this.physicsViewer.showBody(bullletAggregate.body);
 
     return bulletMesh;
   }
