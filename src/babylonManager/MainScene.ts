@@ -24,7 +24,6 @@ import { havokModule } from "../externals/havok";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 // import { Inspector } from "@babylonjs/inspector";
 
-import BulletController from "./controllers/BulletController";
 import PlayerController from "./controllers/PlayerController";
 import EnemyController from "./controllers/EnemyController";
 
@@ -44,10 +43,7 @@ export class MainScene {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
       this.scene.actionManager = new ActionManager(this.scene);
-      this.playerController = new PlayerController(
-        this.scene,
-        new BulletController(this.scene),
-      );
+      this.playerController = new PlayerController(this.scene);
 
       this.enemyController = new EnemyController(
         this.scene,

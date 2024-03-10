@@ -1,4 +1,4 @@
-import { AbstractMesh, Scene } from "@babylonjs/core";
+import { AbstractMesh } from "@babylonjs/core";
 import * as YUKA from "yuka";
 
 export default class Player {
@@ -6,7 +6,7 @@ export default class Player {
   private _mesh!: AbstractMesh;
   private _movingEntity = new YUKA.MovingEntity();
 
-  constructor(private scene: Scene) {}
+  constructor() {}
 
   public get mesh(): AbstractMesh {
     return this._mesh;

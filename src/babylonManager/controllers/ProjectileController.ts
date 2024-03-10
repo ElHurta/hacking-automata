@@ -6,20 +6,20 @@ import {
   Scene,
   SceneLoader,
 } from "@babylonjs/core";
+import Projectile from "../entities/Projectile";
 
-export default class BulletController {
+export default class ProjectileController {
   constructor(
     private scene: Scene,
-    private lastShot = 0,
-    private shootDelay = 150,
+    private lastShot: number = 0,
   ) {}
 
-  ShootBullet(playerMesh: AbstractMesh) {
-    if (Date.now() - this.lastShot > this.shootDelay) {
+  shootProjectile(shooter: AbstractMesh, projectile: Projectile) {
+    if (Date.now() - this.lastShot > projectile.SHOOTING_DELAY) {
       this.lastShot = Date.now();
 
-      this.CreateBullet(playerMesh).then((bullet) => {
-        bullet.physicsBody?.setLinearVelocity(playerMesh.forward.scale(-800));
+      this.createProjectile(shooter, projectile).then((bullet) => {
+        bullet.physicsBody?.setLinearVelocity(shooter.forward.scale(-800));
 
         const observable = bullet.getPhysicsBody()?.getCollisionObservable();
         if (observable) {
@@ -38,21 +38,23 @@ export default class BulletController {
     }
   }
 
-  async CreateBullet(playerMesh: AbstractMesh): Promise<AbstractMesh> {
+  async createProjectile(
+    shooter: AbstractMesh,
+    projectile: Projectile,
+  ): Promise<AbstractMesh> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
-      "src/assets/models/",
-      "bullet01.glb",
+      import.meta.env.VITE_MODELS_PATH,
+      projectile.meshName,
       this.scene,
     );
 
     const bulletMesh = meshes[0];
-    const playerPosition = playerMesh.position.clone();
+    const playerPosition = shooter.position.clone();
 
     // Set Bullet spawn position at the tip of the ship
-    bulletMesh.position = playerPosition.add(playerMesh.forward.scale(-3));
-    //bulletMesh.position.y -= 0.5;
-    bulletMesh.rotation = playerMesh.rotation.clone();
+    bulletMesh.position = playerPosition.add(shooter.forward.scale(-3));
+    bulletMesh.rotation = shooter.rotation.clone();
 
     const bullletAggregate = new PhysicsAggregate(
       bulletMesh,

@@ -9,16 +9,22 @@ import {
 } from "@babylonjs/core";
 import { IKeys } from "../../interfaces/keys.interface";
 
-import Player from "../Entities/Player";
+import ProjectileFactory from "../entities/ProjectileFactory";
+import Player from "../entities/Player";
 
-import BulletController from "./BulletController";
+import ProjectileController from "./ProjectileController";
 import { MovingEntity } from "yuka";
+import { projectileType } from "../../enums/projectileType.enum";
 
 export default class PlayerController {
+  private projectileFactory = new ProjectileFactory();
+  private player: Player = new Player();
+
   constructor(
     private scene: Scene,
-    private bulletController: BulletController,
-    private player: Player = new Player(scene),
+    private projectileController: ProjectileController = new ProjectileController(
+      scene,
+    ),
   ) {
     this.CreateMesh().then((mesh) => {
       this.player.mesh = mesh;
@@ -101,7 +107,10 @@ export default class PlayerController {
       }
 
       if (keyStatus.space) {
-        this.bulletController.ShootBullet(this.player.mesh);
+        this.projectileController.shootProjectile(
+          this.player.mesh,
+          this.projectileFactory.createProjectile(projectileType.PLAYER),
+        );
       }
     });
 
