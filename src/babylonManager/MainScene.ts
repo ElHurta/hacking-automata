@@ -134,7 +134,6 @@ export class MainScene {
           PhysicsShapeType.BOX,
           {
             mass: 0,
-            restitution: 0.9,
           },
           this.scene,
         );

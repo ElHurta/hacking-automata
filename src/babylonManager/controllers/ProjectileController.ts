@@ -8,6 +8,7 @@ import {
 } from "@babylonjs/core";
 import Projectile from "../entities/Projectile";
 
+// Note: Some values are negative to make the projectile go forward, for some reason BabylonJS has the opposite direction on all my models 🙂
 export default class ProjectileController {
   constructor(
     private scene: Scene,
@@ -53,15 +54,15 @@ export default class ProjectileController {
       this.scene,
     );
 
-    const bulletMesh = meshes[0];
+    const projectileModel = meshes[0];
     const playerPosition = shooter.position.clone();
 
     // Set Bullet spawn position at the tip of the ship
-    bulletMesh.position = playerPosition.add(shooter.forward.scale(-3));
-    bulletMesh.rotation = shooter.rotation.clone();
+    projectileModel.position = playerPosition.add(shooter.forward.scale(-3));
+    projectileModel.rotation = shooter.rotation.clone();
 
     const bullletAggregate = new PhysicsAggregate(
-      bulletMesh,
+      projectileModel,
       PhysicsShapeType.BOX,
       {
         mass: 1,
@@ -72,6 +73,6 @@ export default class ProjectileController {
     bullletAggregate.body.disablePreStep = false;
     bullletAggregate.body.setCollisionCallbackEnabled(true);
 
-    return bulletMesh;
+    return projectileModel;
   }
 }
