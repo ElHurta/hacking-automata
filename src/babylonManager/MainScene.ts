@@ -61,7 +61,6 @@ export class MainScene {
 
       this.CreateEnvironment().then(() => {
         this.playerController.AssignCameraToPlayer(camera);
-        this.enemyController?.CreateEnemy();
       });
 
       this.CreateLights();

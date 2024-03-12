@@ -2,31 +2,37 @@ import { Scene, Vector3, AbstractMesh, SceneLoader } from "@babylonjs/core";
 import * as YUKA from "yuka";
 import PlayerController from "./PlayerController";
 import { syncPosition } from "../../utils/setRenderer";
+import Enemy from "../entities/Enemy";
 
 export default class EnemyController {
+  private enemy : Enemy = new Enemy();
   constructor(
     private scene: Scene,
     private playerController: PlayerController,
-  ) {}
+  ) {
+    this.CreateEnemy().then((enemyMesh) => {
+      this.enemy.mesh = enemyMesh;
+      this.CreateEnemyMovement(playerController.playerMovingEntity);
+    });
+  }
 
   CreateEnemyMovement(
-    enemyMesh: AbstractMesh,
-    player: YUKA.MovingEntity,
+    playerMovingEntity: YUKA.MovingEntity,
   ): void {
     const entityManager = new YUKA.EntityManager();
     const enemyVehicle = new YUKA.Vehicle();
     entityManager.add(enemyVehicle);
 
     enemyVehicle.position.set(
-      enemyMesh.position.x,
-      enemyMesh.position.y,
-      enemyMesh.position.z,
+      this.enemy.spawnPosition.x,
+      this.enemy.spawnPosition.y,
+      this.enemy.spawnPosition.z,
     );
 
-    enemyVehicle.setRenderComponent(enemyMesh, syncPosition);
-    enemyVehicle.maxSpeed = 25;
+    enemyVehicle.setRenderComponent(this.enemy.mesh, syncPosition);
+    enemyVehicle.maxSpeed = this.enemy.MOVEMENT_SPEED;
 
-    const seekBehavior = new YUKA.SeekBehavior(player.position);
+    const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
     enemyVehicle.steering.add(seekBehavior);
 
     const time = new YUKA.Time();
@@ -37,23 +43,20 @@ export default class EnemyController {
     });
   }
 
-  async CreateEnemy(): Promise<void> {
+  async CreateEnemy(): Promise<AbstractMesh> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
-      "src/assets/models/",
-      "basicEnemy01.glb",
+      import.meta.env.VITE_MODELS_PATH,
+      import.meta.env.VITE_CHASER_ENEMY_MODEL,
       this.scene,
     );
 
     const enemyMesh = meshes[0];
-    enemyMesh.position.y = 15;
-    enemyMesh.position.x = 50;
+    enemyMesh.position.y = this.enemy.spawnPosition.y;
+    enemyMesh.position.x = this.enemy.spawnPosition.x;
 
     enemyMesh.ellipsoid = new Vector3(3, 1, 3);
 
-    this.CreateEnemyMovement(
-      enemyMesh,
-      this.playerController.playerMovingEntity,
-    );
+    return enemyMesh;
   }
 }
