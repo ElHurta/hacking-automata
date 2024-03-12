@@ -8,6 +8,13 @@ const IS_DESTRUCTIBLE = true;
 const DISPOSE_TIME = 3000;
 export default class EnemyProjectile extends Projectile {
   constructor() {
-    super(MESH_NAME, SHOOTING_DELAY, TRAVEL_SPEED, DAMAGE, IS_DESTRUCTIBLE, DISPOSE_TIME);
+    super(
+      MESH_NAME,
+      SHOOTING_DELAY,
+      TRAVEL_SPEED,
+      DAMAGE,
+      IS_DESTRUCTIBLE,
+      DISPOSE_TIME,
+    );
   }
 }
