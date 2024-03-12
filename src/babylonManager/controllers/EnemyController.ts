@@ -49,7 +49,6 @@ export default class EnemyController {
     enemyMesh.position.y = 15;
     enemyMesh.position.x = 50;
 
-    enemyMesh.checkCollisions = true;
     enemyMesh.ellipsoid = new Vector3(3, 1, 3);
 
     this.CreateEnemyMovement(

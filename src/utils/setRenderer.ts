@@ -12,7 +12,7 @@ export function syncPosition(
   );
 
   if (mesh.collider?.collidedMesh) {
-    entity.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
+    entity.position.set(mesh.position.x, 15, mesh.position.z);
   }
 
   mesh.moveWithCollisions(

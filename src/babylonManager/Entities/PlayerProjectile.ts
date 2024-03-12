@@ -2,7 +2,7 @@ import Projectile from "./Projectile";
 
 const MESH_NAME = "bullet01.glb";
 const SHOOTING_DELAY = 150;
-const TRAVEL_SPEED = 800;
+const TRAVEL_SPEED = 3;
 const DAMAGE = 1;
 const IS_DESTRUCTIBLE = true;
 const DISPOSE_TIME = 3000;
