@@ -24,10 +24,6 @@ export default class ProjectileController {
             shooterForward.scale(-projectile.speed),
           );
           if (projectileMesh.collider?.collidedMesh) {
-            // console.log(
-            //   "Collided with: ",
-            //   projectileMesh.collider?.collidedMesh,
-            // );
             this.disposeProjectile(projectileMesh, movementFunc);
           }
         };
@@ -58,7 +54,6 @@ export default class ProjectileController {
     // Set Bullet spawn position at the tip of the ship
     projectileModel.position = playerPosition.add(shooter.forward.scale(-3));
     projectileModel.rotation = shooter.rotation.clone();
-    projectileModel.checkCollisions = true;
 
     return projectileModel;
   }

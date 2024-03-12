@@ -4,7 +4,7 @@ const MESH_NAME = "bullet01.glb";
 const SHOOTING_DELAY = 150;
 const TRAVEL_SPEED = 3;
 const DAMAGE = 1;
-const IS_DESTRUCTIBLE = true;
+const IS_DESTRUCTIBLE = false;
 const DISPOSE_TIME = 3000;
 
 export default class PlayerProjectile extends Projectile {
