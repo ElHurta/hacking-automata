@@ -5,7 +5,10 @@ import Projectile from "./Projectile";
 import { Vector3 } from "@babylonjs/core";
 
 export default class ProjectileFactory {
-  createProjectile(projectileOption: projectileType, projectileDirection : Vector3): Projectile {
+  createProjectile(
+    projectileOption: projectileType,
+    projectileDirection: Vector3,
+  ): Projectile {
     switch (projectileOption) {
       case projectileType.PLAYER:
         return new PlayerProjectile(projectileDirection);

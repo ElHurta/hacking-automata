@@ -46,7 +46,10 @@ export class MainScene {
       this.scene = scene;
       this.collisionDetector = new CollisionDetector(this.scene);
       this.scene.actionManager = new ActionManager(this.scene);
-      this.playerController = new PlayerController(this.scene, this.collisionDetector);
+      this.playerController = new PlayerController(
+        this.scene,
+        this.collisionDetector,
+      );
 
       this.enemyController = new EnemyController(
         this.scene,
@@ -162,8 +165,7 @@ export class MainScene {
     fakeGround.visibility = 0;
   }
 
-  public get Scene() : Scene {
-    return this.scene; 
+  public get Scene(): Scene {
+    return this.scene;
   }
-  
 }

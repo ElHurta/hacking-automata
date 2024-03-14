@@ -10,9 +10,7 @@ const DISPOSE_TIME = 3000;
 const IS_PLAYER_PROJECTILE = false;
 
 export default class EnemyProjectile extends Projectile {
-  constructor(
-    projectileDirection: Vector3,
-  ) {
+  constructor(projectileDirection: Vector3) {
     super(
       MESH_NAME,
       SHOOTING_DELAY,

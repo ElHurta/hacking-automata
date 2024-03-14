@@ -23,7 +23,9 @@ export default class ProjectileController {
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
-          this.disposeProjectile(projectileMesh, () => projectile.movementFunc());
+          this.disposeProjectile(projectileMesh, () =>
+            projectile.movementFunc(),
+          );
           this.collisionDetector.removeProjectileFromList(projectile);
         }, projectile.disposeTime);
       });
