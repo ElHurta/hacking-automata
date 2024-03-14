@@ -147,6 +147,8 @@ export class MainScene {
         element.checkCollisions = true;
         element.visibility = 0;
       }
+
+      this.collisionDetector.addSceneMeshToList(element);
     });
 
     const fakeGround = MeshBuilder.CreateGround(

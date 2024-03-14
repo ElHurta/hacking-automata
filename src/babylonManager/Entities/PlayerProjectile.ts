@@ -1,3 +1,4 @@
+import { Vector3 } from "@babylonjs/core";
 import Projectile from "./Projectile";
 
 const MESH_NAME = "bullet01.glb";
@@ -9,11 +10,14 @@ const DISPOSE_TIME = 3000;
 const IS_PLAYER_PROJECTILE = true;
 
 export default class PlayerProjectile extends Projectile {
-  constructor() {
+  constructor(
+    projectileDirection: Vector3,
+  ) {
     super(
       MESH_NAME,
       SHOOTING_DELAY,
       TRAVEL_SPEED,
+      projectileDirection,
       DAMAGE,
       IS_DESTRUCTIBLE,
       DISPOSE_TIME,

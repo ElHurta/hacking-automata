@@ -1,14 +1,15 @@
-import { Scene } from "@babylonjs/core";
+import { AbstractMesh, Scene } from "@babylonjs/core";
 import Projectile from "../entities/Projectile";
 import SceneEntity from "../entities/SceneEntity";
 
 export default class CollisionDetector {
   private projectilesList: Projectile[] = [];
   private sceneEntities: SceneEntity[] = [];
+  private sceneMeshes: AbstractMesh[] = [];
 
   constructor(private scene: Scene) {
     this.scene.onAfterRenderObservable.add(() => {
-      if (this.projectilesList.length > 0) this.checkCollisions();
+      if (this.projectilesList.length > 0) this.handleProjectileCollisions();
     });
   }
 
@@ -27,15 +28,25 @@ export default class CollisionDetector {
     }
   }
 
+  disposeProjectile(projectile: Projectile): void {
+    this.scene.unregisterBeforeRender(projectile.movementFunc);
+    this.removeProjectileFromList(projectile);
+    projectile.mesh.dispose();
+  }
+
   public addSceneEntityToList(entity: SceneEntity): void {
     this.sceneEntities.push(entity);
+  }
+
+  public addSceneMeshToList(mesh: AbstractMesh): void {
+    this.sceneMeshes.push(mesh);
   }
 
   public get SceneEntities(): SceneEntity[] {
     return this.sceneEntities;
   }
 
-  private checkCollisions(): void {
+  private handleProjectileCollisions(): void {
     const projectiles = [...this.projectilesList];
     projectiles.forEach((projectile) => {
       this.sceneEntities.forEach((entity) => {
@@ -43,7 +54,7 @@ export default class CollisionDetector {
         if (entity.name === "Player" && !projectile.isPlayerProjectile) {
           if (projectile.mesh.intersectsMesh(entity.meshes[4], true)) {
             entity.lifePoints -= 1;
-            this.removeProjectileFromList(projectile);
+            this.disposeProjectile(projectile);
           }
         }
 
@@ -51,8 +62,7 @@ export default class CollisionDetector {
         if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
           if (projectile.mesh.intersectsMesh(entity.meshes[1], true)) {
             entity.lifePoints -= 1;
-            this.removeProjectileFromList(projectile);
-            console.log(entity.lifePoints);
+            this.disposeProjectile(projectile);
           }
         }
       });

@@ -6,7 +6,7 @@ import CollisionDetector from "../core/CollisionDetector";
 export default class ProjectileController {
   constructor(
     private scene: Scene,
-    private collisionDetector : CollisionDetector,
+    private collisionDetector: CollisionDetector,
     private lastShot: number = 0,
   ) {}
 
@@ -18,23 +18,12 @@ export default class ProjectileController {
   shootProjectile(shooter: AbstractMesh, projectile: Projectile) {
     if (Date.now() - this.lastShot > projectile.shootingDelay) {
       this.lastShot = Date.now();
-      const shooterForward = shooter.forward.clone();
-
       this.createProjectile(shooter, projectile).then((projectileMesh) => {
-        const movementFunc = () => {
-          projectileMesh.moveWithCollisions(
-            shooterForward.scale(-projectile.speed),
-          );
-          if (projectileMesh.collider?.collidedMesh) {
-            this.disposeProjectile(projectileMesh, movementFunc);
-            this.collisionDetector.removeProjectileFromList(projectile);
-          }
-        };
-        this.scene.registerBeforeRender(movementFunc);
+        this.scene.registerBeforeRender(() => projectile.movementFunc());
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
-          this.disposeProjectile(projectileMesh, movementFunc);
+          this.disposeProjectile(projectileMesh, () => projectile.movementFunc());
           this.collisionDetector.removeProjectileFromList(projectile);
         }, projectile.disposeTime);
       });

@@ -113,7 +113,10 @@ export default class PlayerController {
       if (keyStatus.space) {
         this.projectileController.shootProjectile(
           this.player.meshes[0],
-          this.projectileFactory.createProjectile(projectileType.PLAYER),
+          this.projectileFactory.createProjectile(
+            projectileType.PLAYER,
+            this.player.meshes[0].forward.clone(),
+          ),
         );
       }
     });

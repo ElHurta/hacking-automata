@@ -8,7 +8,7 @@ export default class Enemy extends SceneEntity {
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
     movingEntity: YUKA.MovingEntity = new YUKA.MovingEntity(),
-    lifePoints: number = 100,
+    lifePoints: number = 30,
     movementSpeed: number = 30,
   ) {
     super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
