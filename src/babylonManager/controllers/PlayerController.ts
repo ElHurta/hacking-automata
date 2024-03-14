@@ -15,24 +15,28 @@ import Player from "../entities/Player";
 import ProjectileController from "./ProjectileController";
 import { MovingEntity } from "yuka";
 import { projectileType } from "../../enums/projectileType.enum";
+import CollisionDetector from "../core/CollisionDetector";
 
 export default class PlayerController {
   private projectileFactory = new ProjectileFactory();
-  private player: Player = new Player();
+  private player: Player = new Player("Player", [], new Vector3(0, 15, 0));
 
   constructor(
     private scene: Scene,
+    private collisionDetector: CollisionDetector,
     private projectileController: ProjectileController = new ProjectileController(
       scene,
+      collisionDetector,
     ),
   ) {
-    this.CreateMesh().then((mesh) => {
-      this.player.mesh = mesh;
-      this.AddPlayerMovement();
+    this.loadShipMesh().then((meshes) => {
+      this.player.meshes = meshes;
+      this.setupPlayerInputs();
+      this.collisionDetector.addSceneEntityToList(this.player);
     });
   }
 
-  async CreateMesh(): Promise<AbstractMesh> {
+  async loadShipMesh(): Promise<AbstractMesh[]> {
     //Creating ship mesh
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
@@ -41,16 +45,16 @@ export default class PlayerController {
       this.scene,
     );
 
-    const shipMesh = meshes[0];
+    const shipRootMesh = meshes[0];
+    shipRootMesh.position = this.player.spawnPosition;
 
-    shipMesh.position.y = 15;
-    shipMesh.rotate(Vector3.Up(), Math.PI);
-    shipMesh.rotationQuaternion = null;
+    shipRootMesh.rotate(Vector3.Up(), Math.PI);
+    shipRootMesh.rotationQuaternion = null;
 
-    return shipMesh;
+    return meshes;
   }
 
-  AddPlayerMovement(): void {
+  setupPlayerInputs(): void {
     const keyStatus: IKeys = {
       w: false,
       a: false,
@@ -89,26 +93,26 @@ export default class PlayerController {
 
     this.scene.onBeforeRenderObservable.add(() => {
       if (keyStatus.w || keyStatus.d || keyStatus.a || keyStatus.s) {
-        this.player.mesh.moveWithCollisions(
+        this.player.meshes[0].moveWithCollisions(
           new Vector3(
-            (keyStatus.d ? this.player.MOVEMENT_SPEED : 0) -
-              (keyStatus.a ? this.player.MOVEMENT_SPEED : 0),
+            (keyStatus.d ? this.player.movementSpeed : 0) -
+              (keyStatus.a ? this.player.movementSpeed : 0),
             0,
-            (keyStatus.w ? this.player.MOVEMENT_SPEED : 0) -
-              (keyStatus.s ? this.player.MOVEMENT_SPEED : 0),
+            (keyStatus.w ? this.player.movementSpeed : 0) -
+              (keyStatus.s ? this.player.movementSpeed : 0),
           ),
         );
 
         this.player.movingEntity.position.set(
-          this.player.mesh.position.x,
-          this.player.mesh.position.y,
-          this.player.mesh.position.z,
+          this.player.meshes[0].position.x,
+          this.player.meshes[0].position.y,
+          this.player.meshes[0].position.z,
         );
       }
 
       if (keyStatus.space) {
         this.projectileController.shootProjectile(
-          this.player.mesh,
+          this.player.meshes[0],
           this.projectileFactory.createProjectile(projectileType.PLAYER),
         );
       }
@@ -116,15 +120,15 @@ export default class PlayerController {
 
     this.scene.onPointerMove = (_, pickInfo) => {
       if (pickInfo.pickedPoint) {
-        this.player.mesh.lookAt(pickInfo.pickedPoint);
+        this.player.meshes[0].lookAt(pickInfo.pickedPoint);
       }
-      this.player.mesh.rotation.x = 0;
-      this.player.mesh.rotation.z = 0;
+      this.player.meshes[0].rotation.x = 0;
+      this.player.meshes[0].rotation.z = 0;
     };
   }
 
   async AssignCameraToPlayer(camera: ArcRotateCamera) {
-    camera.setTarget(this.player.mesh, true);
+    camera.setTarget(this.player.meshes[0], true);
   }
 
   public get playerMovingEntity(): MovingEntity {

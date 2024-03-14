@@ -6,6 +6,7 @@ const TRAVEL_SPEED = 3;
 const DAMAGE = 1;
 const IS_DESTRUCTIBLE = false;
 const DISPOSE_TIME = 3000;
+const IS_PLAYER_PROJECTILE = true;
 
 export default class PlayerProjectile extends Projectile {
   constructor() {
@@ -16,6 +17,7 @@ export default class PlayerProjectile extends Projectile {
       DAMAGE,
       IS_DESTRUCTIBLE,
       DISPOSE_TIME,
+      IS_PLAYER_PROJECTILE,
     );
   }
 }

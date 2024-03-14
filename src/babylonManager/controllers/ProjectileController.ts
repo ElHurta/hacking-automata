@@ -1,10 +1,12 @@
 import { AbstractMesh, Scene, SceneLoader } from "@babylonjs/core";
 import Projectile from "../entities/Projectile";
+import CollisionDetector from "../core/CollisionDetector";
 
 // Note: Some values are negative to make the projectile go forward, for some reason BabylonJS has the opposite direction on all my models 🙂
 export default class ProjectileController {
   constructor(
     private scene: Scene,
+    private collisionDetector : CollisionDetector,
     private lastShot: number = 0,
   ) {}
 
@@ -25,6 +27,7 @@ export default class ProjectileController {
           );
           if (projectileMesh.collider?.collidedMesh) {
             this.disposeProjectile(projectileMesh, movementFunc);
+            this.collisionDetector.removeProjectileFromList(projectile);
           }
         };
         this.scene.registerBeforeRender(movementFunc);
@@ -32,6 +35,7 @@ export default class ProjectileController {
         // Destroy bullet after 3 seconds
         setTimeout(() => {
           this.disposeProjectile(projectileMesh, movementFunc);
+          this.collisionDetector.removeProjectileFromList(projectile);
         }, projectile.disposeTime);
       });
     }
@@ -54,6 +58,9 @@ export default class ProjectileController {
     // Set Bullet spawn position at the tip of the ship
     projectileModel.position = playerPosition.add(shooter.forward.scale(-3));
     projectileModel.rotation = shooter.rotation.clone();
+
+    this.collisionDetector.addProjectileToList(projectile);
+    projectile.mesh = projectileModel;
 
     return projectileModel;
   }

@@ -26,6 +26,7 @@ import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 
 import PlayerController from "./controllers/PlayerController";
 import EnemyController from "./controllers/EnemyController";
+import CollisionDetector from "./core/CollisionDetector";
 
 export class MainScene {
   scene!: Scene;
@@ -35,6 +36,7 @@ export class MainScene {
   havokPlugin: HavokPlugin | undefined;
   playerController!: PlayerController;
   enemyController: EnemyController | undefined;
+  collisionDetector!: CollisionDetector;
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
@@ -42,12 +44,14 @@ export class MainScene {
 
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
+      this.collisionDetector = new CollisionDetector(this.scene);
       this.scene.actionManager = new ActionManager(this.scene);
-      this.playerController = new PlayerController(this.scene);
+      this.playerController = new PlayerController(this.scene, this.collisionDetector);
 
       this.enemyController = new EnemyController(
         this.scene,
         this.playerController,
+        this.collisionDetector,
       );
 
       const camera = new ArcRotateCamera(
@@ -155,4 +159,9 @@ export class MainScene {
     fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
   }
+
+  public get Scene() : Scene {
+    return this.scene; 
+  }
+  
 }

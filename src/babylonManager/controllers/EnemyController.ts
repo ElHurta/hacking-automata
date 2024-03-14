@@ -3,22 +3,24 @@ import * as YUKA from "yuka";
 import PlayerController from "./PlayerController";
 import { syncPosition } from "../../utils/setRenderer";
 import Enemy from "../entities/Enemy";
+import CollisionDetector from "../core/CollisionDetector";
 
 export default class EnemyController {
-  private enemy : Enemy = new Enemy();
+  private enemy: Enemy = new Enemy("Chaser", [], new Vector3(0, 15, 50));
+
   constructor(
     private scene: Scene,
     private playerController: PlayerController,
+    private collisionDetector: CollisionDetector,
   ) {
-    this.CreateEnemy().then((enemyMesh) => {
-      this.enemy.mesh = enemyMesh;
-      this.CreateEnemyMovement(playerController.playerMovingEntity);
+    this.loadEnemyMesh().then((enemyMeshes) => {
+      this.enemy.meshes = enemyMeshes;
+      this.setupEnemyMovement(playerController.playerMovingEntity);
+      this.collisionDetector.addSceneEntityToList(this.enemy);
     });
   }
 
-  CreateEnemyMovement(
-    playerMovingEntity: YUKA.MovingEntity,
-  ): void {
+  setupEnemyMovement(playerMovingEntity: YUKA.MovingEntity): void {
     const entityManager = new YUKA.EntityManager();
     const enemyVehicle = new YUKA.Vehicle();
     entityManager.add(enemyVehicle);
@@ -29,8 +31,8 @@ export default class EnemyController {
       this.enemy.spawnPosition.z,
     );
 
-    enemyVehicle.setRenderComponent(this.enemy.mesh, syncPosition);
-    enemyVehicle.maxSpeed = this.enemy.MOVEMENT_SPEED;
+    enemyVehicle.setRenderComponent(this.enemy.meshes[0], syncPosition);
+    enemyVehicle.maxSpeed = this.enemy.movementSpeed;
 
     const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
     enemyVehicle.steering.add(seekBehavior);
@@ -43,7 +45,7 @@ export default class EnemyController {
     });
   }
 
-  async CreateEnemy(): Promise<AbstractMesh> {
+  async loadEnemyMesh(): Promise<AbstractMesh[]> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       "",
       import.meta.env.VITE_MODELS_PATH,
@@ -51,12 +53,12 @@ export default class EnemyController {
       this.scene,
     );
 
-    const enemyMesh = meshes[0];
-    enemyMesh.position.y = this.enemy.spawnPosition.y;
-    enemyMesh.position.x = this.enemy.spawnPosition.x;
+    const enemyRootMesh = meshes[0];
+    enemyRootMesh.position.y = this.enemy.spawnPosition.y;
+    enemyRootMesh.position.x = this.enemy.spawnPosition.x;
 
-    enemyMesh.ellipsoid = new Vector3(3, 1, 3);
+    enemyRootMesh.ellipsoid = new Vector3(4, 1, 4);
 
-    return enemyMesh;
+    return meshes;
   }
 }
