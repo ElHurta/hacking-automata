@@ -10,20 +10,15 @@ export default class ProjectileController {
     private lastShot: number = 0,
   ) {}
 
-  disposeProjectile(projectile: AbstractMesh, movementFunc: () => void): void {
-    this.scene.unregisterBeforeRender(movementFunc);
-    projectile.dispose();
-  }
-
   shootProjectile(shooter: AbstractMesh, projectile: Projectile) {
     if (Date.now() - this.lastShot > projectile.shootingDelay) {
       this.lastShot = Date.now();
-      this.createProjectile(shooter, projectile).then((projectileMesh) => {
+      this.createProjectile(shooter, projectile).then(() => {
         this.scene.registerBeforeRender(projectile.movementFunc);
 
         // Destroy bullet after 3 seconds
         setTimeout(() => {
-          this.disposeProjectile(projectileMesh, projectile.movementFunc);
+          this.collisionDetector.disposeProjectile(projectile);
           this.collisionDetector.removeProjectileFromList(projectile);
         }, projectile.disposeTime);
       });

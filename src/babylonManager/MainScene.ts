@@ -14,8 +14,6 @@ import {
   ShadowGenerator,
   GlowLayer,
   PhysicsViewer,
-  PhysicsAggregate,
-  PhysicsShapeType,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
@@ -135,14 +133,6 @@ export class MainScene {
 
     level.meshes.forEach((element) => {
       if (element.name.includes("UndestructibleBlock")) {
-        new PhysicsAggregate(
-          element,
-          PhysicsShapeType.BOX,
-          {
-            mass: 0,
-          },
-          this.scene,
-        );
         element.checkCollisions = true;
       }
 
@@ -150,8 +140,6 @@ export class MainScene {
         element.checkCollisions = true;
         element.visibility = 0;
       }
-
-      this.collisionDetector.addSceneMeshToList(element);
     });
 
     const fakeGround = MeshBuilder.CreateGround(

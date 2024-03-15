@@ -1,11 +1,10 @@
-import { AbstractMesh, Scene } from "@babylonjs/core";
+import { Scene } from "@babylonjs/core";
 import Projectile from "../entities/Projectile";
 import SceneEntity from "../entities/SceneEntity";
 
 export default class CollisionDetector {
   private projectilesList: Projectile[] = [];
   private sceneEntities: SceneEntity[] = [];
-  private sceneMeshes: AbstractMesh[] = [];
 
   constructor(private scene: Scene) {
     this.scene.onAfterRenderObservable.add(() => {
@@ -38,10 +37,6 @@ export default class CollisionDetector {
     this.sceneEntities.push(entity);
   }
 
-  public addSceneMeshToList(mesh: AbstractMesh): void {
-    this.sceneMeshes.push(mesh);
-  }
-
   public get SceneEntities(): SceneEntity[] {
     return this.sceneEntities;
   }
@@ -49,23 +44,29 @@ export default class CollisionDetector {
   private handleProjectileCollisions(): void {
     const projectiles = [...this.projectilesList];
     projectiles.forEach((projectile) => {
-      this.sceneEntities.forEach((entity) => {
-        // Player Collision
-        if (entity.name === "Player" && !projectile.isPlayerProjectile) {
-          if (projectile.mesh.intersectsMesh(entity.meshes[4], true)) {
-            entity.lifePoints -= 1;
-            this.disposeProjectile(projectile);
+      // Collision with meshes detecting collisions, usually scenery
+      if (projectile.mesh.collider?.collidedMesh) {
+        this.disposeProjectile(projectile);
+      } else {
+        // Collision with entities
+        this.sceneEntities.forEach((entity) => {
+          // Player Collision
+          if (entity.name === "Player" && !projectile.isPlayerProjectile) {
+            if (projectile.mesh.intersectsMesh(entity.meshes[4], true)) {
+              entity.lifePoints -= 1;
+              this.disposeProjectile(projectile);
+            }
           }
-        }
 
-        // Enemy Collision
-        if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
-          if (projectile.mesh.intersectsMesh(entity.meshes[1], true)) {
-            entity.lifePoints -= 1;
-            this.disposeProjectile(projectile);
+          // Enemy Collision
+          if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
+            if (projectile.mesh.intersectsMesh(entity.meshes[1], true)) {
+              entity.lifePoints -= 1;
+              this.disposeProjectile(projectile);
+            }
           }
-        }
-      });
+        });
+      }
     });
   }
 }
