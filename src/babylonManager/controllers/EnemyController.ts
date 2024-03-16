@@ -47,7 +47,7 @@ export default class EnemyController {
 
   async loadEnemyMesh(): Promise<AbstractMesh[]> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
-      "",
+      null,
       import.meta.env.VITE_MODELS_PATH,
       import.meta.env.VITE_CHASER_ENEMY_MODEL,
       this.scene,
@@ -56,7 +56,6 @@ export default class EnemyController {
     const enemyRootMesh = meshes[0];
     enemyRootMesh.position.y = this.enemy.spawnPosition.y;
     enemyRootMesh.position.x = this.enemy.spawnPosition.x;
-
     enemyRootMesh.ellipsoid = new Vector3(4, 1, 4);
 
     return meshes;
