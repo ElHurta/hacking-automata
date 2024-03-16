@@ -61,8 +61,17 @@ export default class CollisionDetector {
           // Enemy Collision
           if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
             if (projectile.mesh.intersectsMesh(entity.meshes[1], true)) {
-              entity.lifePoints -= 1;
               this.disposeProjectile(projectile);
+              entity.lifePoints -= 1;
+              console.log(entity.lifePoints);
+              if (entity.lifePoints <= 0) {
+                entity.meshes.forEach((mesh) => {
+                  mesh.dispose();
+                });
+                this.sceneEntities = this.sceneEntities.filter(
+                  (e) => e.name !== "Chaser",
+                );
+              }
             }
           }
         });
