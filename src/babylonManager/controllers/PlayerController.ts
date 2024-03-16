@@ -3,6 +3,7 @@ import {
   ActionManager,
   ArcRotateCamera,
   ExecuteCodeAction,
+  MeshBuilder,
   Scene,
   SceneLoader,
   Vector3,
@@ -39,19 +40,34 @@ export default class PlayerController {
   async loadShipMesh(): Promise<AbstractMesh[]> {
     //Creating ship mesh
     const { meshes } = await SceneLoader.ImportMeshAsync(
-      "",
+      null,
       import.meta.env.VITE_MODELS_PATH,
       import.meta.env.VITE_DEFAULT_PLAYER_MODEL,
       this.scene,
     );
 
     const shipRootMesh = meshes[0];
-    shipRootMesh.position = this.player.spawnPosition;
+    const boundingBox = meshes[4].getBoundingInfo().boundingBox;
 
+    const playerBox = MeshBuilder.CreateBox(
+      "playerBox",
+      {
+        width: boundingBox.extendSizeWorld.x * 2,
+        height: boundingBox.extendSizeWorld.y * 2,
+        depth: boundingBox.extendSizeWorld.z * 2,
+      },
+      this.scene,
+    );
+
+    shipRootMesh.parent = playerBox;
     shipRootMesh.rotate(Vector3.Up(), Math.PI);
-    shipRootMesh.rotationQuaternion = null;
+    playerBox.position = this.player.spawnPosition;
+    playerBox.rotationQuaternion = null;
 
-    return meshes;
+    playerBox.isVisible = false;
+    playerBox.isPickable = false;
+
+    return [playerBox, ...meshes];
   }
 
   setupPlayerInputs(): void {

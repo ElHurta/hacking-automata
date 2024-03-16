@@ -4,7 +4,7 @@ export default abstract class Projectile {
   protected _mesh: AbstractMesh | undefined;
   protected _movementFunc: () => void = () => {
     if (this._mesh) {
-      this._mesh.moveWithCollisions(this._direction.scale(-this._speed));
+      this._mesh.moveWithCollisions(this._direction.scale(this._speed));
     }
   };
 

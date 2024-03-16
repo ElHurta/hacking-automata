@@ -40,7 +40,7 @@ export default class ProjectileController {
     const playerPosition = shooter.position.clone();
 
     // Set Bullet spawn position at the tip of the ship
-    projectileModel.position = playerPosition.add(shooter.forward.scale(-3));
+    projectileModel.position = playerPosition.add(shooter.forward.scale(4));
     projectileModel.rotation = shooter.rotation.clone();
 
     this.collisionDetector.addProjectileToList(projectile);
@@ -48,25 +48,4 @@ export default class ProjectileController {
 
     return projectileModel;
   }
-
-  // createBoundingBox(mesh: AbstractMesh): void {
-  //   //const boundingBox = meshes[1].getBoundingInfo().boundingBox;
-  //   // const newRoot = MeshBuilder.CreateBox(
-  //   //   "bbMesh1",
-  //   //   {
-  //   //     width: boundingBox.extendSizeWorld.x * 2,
-  //   //     height: boundingBox.extendSizeWorld.y * 2,
-  //   //     depth: boundingBox.extendSizeWorld.z * 2,
-  //   //   },
-  //   //   this.scene,
-  //   // );
-
-  //   // const mat = new StandardMaterial("mat");
-  //   // mat.diffuseColor = Color3.Green();
-  //   // mat.alpha = 0.7;
-  //   // newRoot.material = mat;
-
-  //   // newRoot.position = boundingBox.centerWorld;
-  //   // newRoot.rotation = projectileModel.rotation.clone();
-  // }
 }
