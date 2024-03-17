@@ -15,8 +15,8 @@ export default abstract class Projectile {
     protected _direction: Vector3,
     protected _damage: number,
     protected _destructible: boolean,
-    protected _disposeTime: number,
     protected _isPlayerProjectile: boolean,
+    protected _disposeTime: number = 3000,
   ) {}
 
   get meshName(): string {

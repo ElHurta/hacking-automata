@@ -30,17 +30,17 @@ export default class ProjectileController {
     projectile: Projectile,
   ): Promise<AbstractMesh> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
-      "",
+      null,
       import.meta.env.VITE_MODELS_PATH,
       projectile.meshName,
       this.scene,
     );
 
     const projectileModel = meshes[0];
-    const playerPosition = shooter.position.clone();
+    const shooterPosition = shooter.position.clone();
 
     // Set Bullet spawn position at the tip of the ship
-    projectileModel.position = playerPosition.add(shooter.forward.scale(4));
+    projectileModel.position = shooterPosition.add(shooter.forward.scale(4));
     projectileModel.rotation = shooter.rotation.clone();
 
     this.collisionDetector.addProjectileToList(projectile);

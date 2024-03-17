@@ -76,7 +76,7 @@ export class MainScene {
     const scene = new Scene(this.engine);
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
-    gl.intensity = 0.3;
+    gl.intensity = 0.4;
     // this.havokPlugin = new HavokPlugin(true, await havokModule);
     // scene.enablePhysics(new Vector3(0, 0, 0), this.havokPlugin);
     // Inspector.Show(scene, {});
@@ -107,6 +107,24 @@ export class MainScene {
   }
 
   async CreateEnvironment() {
+    // const bullet = await SceneLoader.ImportMeshAsync(
+    //   null,
+    //   "src/assets/models/",
+    //   "desBullet01.glb",
+    //   this.scene,
+    // );
+
+    // bullet.meshes[0].position = new Vector3(0, 15, 0);
+
+    // const bullet2 = await SceneLoader.ImportMeshAsync(
+    //   null,
+    //   "src/assets/models/",
+    //   "noDesBullet01.glb",
+    //   this.scene,
+    // );
+
+    // bullet2.meshes[0].position = new Vector3(10, 15, 0);
+
     const level = await SceneLoader.ImportMeshAsync(
       "",
       "src/assets/levels/",

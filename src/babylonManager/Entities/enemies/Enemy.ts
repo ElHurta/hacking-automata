@@ -3,6 +3,8 @@ import SceneEntity from "../SceneEntity";
 import { MovingEntity } from "yuka";
 
 export default class Enemy extends SceneEntity {
+  protected shootingFunc : (() => void) | undefined;
+  
   constructor(
     name: string,
     meshes: AbstractMesh[],
@@ -12,5 +14,13 @@ export default class Enemy extends SceneEntity {
     movementSpeed: number = 30,
   ) {
     super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+  }
+
+  public get shootingFunction(): (() => void) | undefined {
+    return this.shootingFunc;
+  }
+
+  public set shootingFunction(func: () => void) {
+    this.shootingFunc = func;
   }
 }
