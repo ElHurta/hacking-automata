@@ -18,7 +18,6 @@ import {
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
-import { havokModule } from "../externals/havok";
 import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 // import { Inspector } from "@babylonjs/inspector";
 
@@ -81,9 +80,8 @@ export class MainScene {
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
     gl.intensity = 0.3;
-    this.havokPlugin = new HavokPlugin(true, await havokModule);
-
-    scene.enablePhysics(new Vector3(0, 0, 0), this.havokPlugin);
+    // this.havokPlugin = new HavokPlugin(true, await havokModule);
+    // scene.enablePhysics(new Vector3(0, 0, 0), this.havokPlugin);
     // Inspector.Show(scene, {});
 
     return scene;
