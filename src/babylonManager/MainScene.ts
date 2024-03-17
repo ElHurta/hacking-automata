@@ -13,7 +13,6 @@ import {
   MeshBuilder,
   ShadowGenerator,
   GlowLayer,
-  PhysicsViewer,
 } from "@babylonjs/core";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
@@ -29,7 +28,6 @@ export class MainScene {
   scene!: Scene;
   engine: Engine;
   shadowGenerator: ShadowGenerator | undefined;
-  physicsViewer: PhysicsViewer;
   havokPlugin: HavokPlugin | undefined;
   playerController!: PlayerController;
   enemyController: EnemyController | undefined;
@@ -37,7 +35,6 @@ export class MainScene {
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true);
-    this.physicsViewer = new PhysicsViewer();
 
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
