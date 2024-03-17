@@ -1,6 +1,6 @@
 import PlayerProjectile from "./PlayerProjectile";
 import EnemyProjectile from "./EnemyProjectile";
-import { projectileType } from "../../enums/projectileType.enum";
+import { projectileType } from "../../../enums/projectileType.enum";
 import Projectile from "./Projectile";
 import { Vector3 } from "@babylonjs/core";
 

@@ -10,7 +10,7 @@ import {
 } from "@babylonjs/core";
 import { IKeys } from "../../interfaces/keys.interface";
 
-import ProjectileFactory from "../entities/ProjectileFactory";
+import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
 import Player from "../entities/Player";
 
 import ProjectileController from "./ProjectileController";

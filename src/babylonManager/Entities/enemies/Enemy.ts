@@ -1,13 +1,13 @@
 import { AbstractMesh, Vector3 } from "@babylonjs/core";
-import * as YUKA from "yuka";
-import SceneEntity from "./SceneEntity";
+import SceneEntity from "../SceneEntity";
+import { MovingEntity } from "yuka";
 
 export default class Enemy extends SceneEntity {
   constructor(
     name: string,
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
-    movingEntity: YUKA.MovingEntity = new YUKA.MovingEntity(),
+    movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 30,
     movementSpeed: number = 30,
   ) {

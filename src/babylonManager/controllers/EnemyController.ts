@@ -2,11 +2,12 @@ import { Scene, Vector3, AbstractMesh, SceneLoader } from "@babylonjs/core";
 import * as YUKA from "yuka";
 import PlayerController from "./PlayerController";
 import { syncPosition } from "../../utils/setRenderer";
-import Enemy from "../entities/Enemy";
+import Enemy from "../entities/enemies/Enemy";
 import CollisionDetector from "../core/CollisionDetector";
 
 export default class EnemyController {
   private enemy: Enemy = new Enemy("Chaser", [], new Vector3(0, 15, 50));
+  private enemiesList: Enemy[] = [];
 
   constructor(
     private scene: Scene,

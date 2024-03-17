@@ -1,5 +1,5 @@
 import { Scene } from "@babylonjs/core";
-import Projectile from "../entities/Projectile";
+import Projectile from "../entities/projectiles/Projectile";
 import SceneEntity from "../entities/SceneEntity";
 
 export default class CollisionDetector {
