@@ -90,12 +90,6 @@ export class MainScene {
   }
 
   CreateLights(): void {
-    // const dirLight = new DirectionalLight(
-    //   "dirLight",
-    //   new Vector3(0, -1, 0),
-    //   this.scene,
-    // );
-
     const hemiLight = new HemisphericLight(
       "hemiLight",
       new Vector3(0, 1, 0),
@@ -103,10 +97,6 @@ export class MainScene {
     );
 
     hemiLight.intensity = 0.6;
-    //this.shadowGenerator = new ShadowGenerator(1024, hemiLight);
-    //this.shadowGenerator.usePoissonSampling = true;
-    //this.shadowGenerator.useBlurExponentialShadowMap = true;
-    //this.CreateGizmos(hemiLight);
   }
 
   CreateGizmos(customLight: Light): void {
