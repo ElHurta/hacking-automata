@@ -54,7 +54,13 @@ export default class EnemyController {
 
     const time = new YUKA.Time();
 
-    this.scene.onBeforeRenderObservable.add(() => {
+    const enemyUpdate = () => {
+      const delta = time.update().getDelta();
+      entityManager.update(delta);
+      enemyLifeCheck();
+    };
+
+    const enemyLifeCheck = () => {
       if (this.enemy.lifePoints <= 0) {
         console.log("Enemy is dead");
         this.scene.unregisterBeforeRender(
@@ -63,13 +69,13 @@ export default class EnemyController {
         this.enemy.meshes.forEach((mesh) => {
           mesh.dispose();
         });
+        this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
 
         return;
       }
+    };
 
-      const delta = time.update().getDelta();
-      entityManager.update(delta);
-    });
+    this.scene.onBeforeRenderObservable.add(enemyUpdate);
   }
 
   async loadEnemyMesh(): Promise<AbstractMesh[]> {
@@ -114,14 +120,10 @@ export default class EnemyController {
           this.enemy.meshes[0].forward.clone(),
         ),
       );
-    }
+    };
 
     this.enemy.shootingFunction = shootingFunc;
 
-    this.scene.registerBeforeRender(() => {
-      if (this.enemy.shootingFunction)
-        this.enemy.shootingFunction();
-      console.log("enemy shooting");
-    });
+    this.scene.registerBeforeRender(this.enemy.shootingFunction as () => void);
   }
 }
