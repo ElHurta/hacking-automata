@@ -107,32 +107,12 @@ export class MainScene {
   }
 
   async CreateEnvironment() {
-    // const bullet = await SceneLoader.ImportMeshAsync(
-    //   null,
-    //   "src/assets/models/",
-    //   "desBullet01.glb",
-    //   this.scene,
-    // );
-
-    // bullet.meshes[0].position = new Vector3(0, 15, 0);
-
-    // const bullet2 = await SceneLoader.ImportMeshAsync(
-    //   null,
-    //   "src/assets/models/",
-    //   "noDesBullet01.glb",
-    //   this.scene,
-    // );
-
-    // bullet2.meshes[0].position = new Vector3(10, 15, 0);
-
     const level = await SceneLoader.ImportMeshAsync(
       "",
       "src/assets/levels/",
       "testLevel.glb",
       this.scene,
     );
-
-    level.meshes[1].receiveShadows = true;
 
     level.meshes.forEach((element) => {
       if (element.name.includes("UndestructibleBlock")) {
