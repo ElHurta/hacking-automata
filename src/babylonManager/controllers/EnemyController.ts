@@ -62,7 +62,6 @@ export default class EnemyController {
 
     const enemyLifeCheck = () => {
       if (this.enemy.lifePoints <= 0) {
-        console.log("Enemy is dead");
         this.scene.unregisterBeforeRender(
           this.enemy.shootingFunction as () => void,
         );

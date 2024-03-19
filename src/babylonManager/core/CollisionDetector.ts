@@ -54,7 +54,6 @@ export default class CollisionDetector {
           if (entity.name === "Player" && !projectile.isPlayerProjectile) {
             if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
               entity.lifePoints -= 1;
-              console.log(entity.lifePoints);
               this.disposeProjectile(projectile);
             }
           }
@@ -63,10 +62,7 @@ export default class CollisionDetector {
           if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
             if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
               this.disposeProjectile(projectile);
-              
               entity.lifePoints -= 1;
-              console.log(entity.lifePoints);
-
               if (entity.lifePoints <= 0) {
                 this.sceneEntities = this.sceneEntities.filter(
                   (e) => e.name !== "Chaser",
