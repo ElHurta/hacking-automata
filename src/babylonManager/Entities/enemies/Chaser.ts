@@ -9,7 +9,7 @@ export default class Chaser extends Enemy {
     name = "Chaser",
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 30,
-    movementSpeed: number = 30,
+    movementSpeed: number = 15,
     private _hasArmor: boolean = false,
   ) {
     super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);

@@ -8,15 +8,20 @@ import {
 import * as YUKA from "yuka";
 import PlayerController from "./PlayerController";
 import { syncPosition } from "../../utils/setRenderer";
-import Enemy from "../entities/enemies/Enemy";
 import CollisionDetector from "../core/CollisionDetector";
 import ProjectileController from "./ProjectileController";
 import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
 import { projectileType } from "../../enums/projectileType.enum";
+import EnemyFactory from "../entities/enemies/EnemyFactory";
+import { enemyType } from "../../enums/enemyType.enum";
 
 export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
-  private enemy: Enemy = new Enemy("Chaser", [], new Vector3(0, 15, 50));
+  private enemyFactory = new EnemyFactory();
+  private enemy = this.enemyFactory.createEnemy(
+    enemyType.CHASER,
+    new Vector3(0, 15, 50),
+  );
 
   constructor(
     private scene: Scene,
