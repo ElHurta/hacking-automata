@@ -23,6 +23,7 @@ import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 import PlayerController from "./controllers/PlayerController";
 import EnemyController from "./controllers/EnemyController";
 import CollisionDetector from "./core/CollisionDetector";
+import Obstacle from "./entities/Obstacle";
 
 export class MainScene {
   scene!: Scene;
@@ -74,11 +75,10 @@ export class MainScene {
 
   async CreateNewScene(): Promise<Scene> {
     const scene = new Scene(this.engine);
+    scene.collisionsEnabled = true;
     scene.clearColor = new Color4(0.26, 0.25, 0.23, 1);
     const gl = new GlowLayer("glow", scene);
     gl.intensity = 0.4;
-    // this.havokPlugin = new HavokPlugin(true, await havokModule);
-    // scene.enablePhysics(new Vector3(0, 0, 0), this.havokPlugin);
     // Inspector.Show(scene, {});
 
     return scene;
@@ -117,11 +117,17 @@ export class MainScene {
     level.meshes.forEach((element) => {
       if (element.name.includes("UndestructibleBlock")) {
         element.checkCollisions = true;
+        this.collisionDetector.addSceneEntityToList(
+          new Obstacle("Obstacle", [element], element.position)
+        );
       }
 
       if (element.name.includes("Walls")) {
         element.checkCollisions = true;
         element.visibility = 0;
+        this.collisionDetector.addSceneEntityToList(
+          new Obstacle("Obstacle", [element], element.position)
+        );
       }
     });
 

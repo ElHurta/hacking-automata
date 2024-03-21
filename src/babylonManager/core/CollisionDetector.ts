@@ -44,34 +44,38 @@ export default class CollisionDetector {
   private handleProjectileCollisions(): void {
     const projectiles = [...this.projectilesList];
     projectiles.forEach((projectile) => {
-      // Collision with meshes detecting collisions, usually scenery
-      if (projectile.mesh.collider?.collidedMesh) {
-        this.disposeProjectile(projectile);
-      } else {
-        // Collision with entities
-        this.sceneEntities.forEach((entity) => {
-          // Player Collision
-          if (entity.name === "Player" && !projectile.isPlayerProjectile) {
-            if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
-              entity.lifePoints -= 1;
-              this.disposeProjectile(projectile);
-            }
-          }
 
-          // Enemy Collision
-          if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
-            if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
-              this.disposeProjectile(projectile);
-              entity.lifePoints -= 1;
-              if (entity.lifePoints <= 0) {
-                this.sceneEntities = this.sceneEntities.filter(
-                  (e) => e.name !== "Chaser",
-                );
-              }
+      // Collision with entities
+      this.sceneEntities.forEach((entity) => {
+
+        // Obstacle Collision
+        if (entity.name === "Obstacle") {
+          if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
+            this.disposeProjectile(projectile);
+          }
+        }
+
+        // Player Collision
+        if (entity.name === "Player" && !projectile.isPlayerProjectile) {
+          if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
+            entity.lifePoints -= 1;
+            this.disposeProjectile(projectile);
+          }
+        }
+
+        // Enemy Collision
+        if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
+          if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
+            this.disposeProjectile(projectile);
+            entity.lifePoints -= 1;
+            if (entity.lifePoints <= 0) {
+              this.sceneEntities = this.sceneEntities.filter(
+                (e) => e.name !== "Chaser",
+              );
             }
           }
-        });
-      }
+        }
+      });
     });
   }
 }

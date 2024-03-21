@@ -106,6 +106,13 @@ export default class EnemyController {
 
     enemyBox.isVisible = false;
     enemyBox.isPickable = false;
+    enemyBox.checkCollisions = true;
+
+    enemyBox.ellipsoid = new Vector3(
+      boundingBox.extendSizeWorld.x,
+      1,
+      boundingBox.extendSizeWorld.z,
+    );
 
     return [enemyBox, ...meshes];
   }

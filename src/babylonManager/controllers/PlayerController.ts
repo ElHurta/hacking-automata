@@ -67,6 +67,12 @@ export default class PlayerController {
     playerBox.isVisible = false;
     playerBox.isPickable = false;
 
+    playerBox.ellipsoid = new Vector3(
+      boundingBox.extendSizeWorld.x,
+      1,
+      boundingBox.extendSizeWorld.z,
+    );
+
     return [playerBox, ...meshes];
   }
 
