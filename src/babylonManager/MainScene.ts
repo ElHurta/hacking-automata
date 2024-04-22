@@ -17,7 +17,6 @@ import {
 import "@babylonjs/core/Physics/physicsEngineComponent";
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
-import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 // import { Inspector } from "@babylonjs/inspector";
 
 import PlayerController from "./controllers/PlayerController";
@@ -27,15 +26,12 @@ import Obstacle from "./entities/Obstacle";
 
 export class MainScene {
   scene!: Scene;
-  engine: Engine;
   shadowGenerator: ShadowGenerator | undefined;
-  havokPlugin: HavokPlugin | undefined;
   playerController!: PlayerController;
   enemyController: EnemyController | undefined;
   collisionDetector!: CollisionDetector;
 
-  constructor(private canvas: HTMLCanvasElement) {
-    this.engine = new Engine(canvas, true);
+  constructor(private engine: Engine) {
 
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
@@ -66,10 +62,6 @@ export class MainScene {
       });
 
       this.CreateLights();
-
-      this.engine.runRenderLoop(() => {
-        this.scene.render();
-      });
     });
   }
 
