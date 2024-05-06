@@ -5,15 +5,19 @@ export interface GameData {
 export interface SceneData {
     name:          string;
     meshLevelName: string;
-    enemies:       Enemy[];
+    enemies:       EnemyData[];
     player:        Player;
 }
 
-export interface Enemy {
+export interface EnemyData {
     name:          string;
-    spawnPosition: string;
+    spawnPosX: number;
+    spawnPosY: number;
+    spawnPosZ: number;
 }
 
 export interface Player {
-    spawnPosition: string;
+    spawnPosX: number;
+    spawnPosY: number;
+    spawnPosZ: number;
 }

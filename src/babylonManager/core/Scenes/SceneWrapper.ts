@@ -18,6 +18,11 @@ import PlayerController from "../../controllers/PlayerController";
 import EnemyController from "../../controllers/EnemyController";
 import CollisionDetector from "../CollisionDetector";
 import Obstacle from "../../entities/Obstacle";
+import { SceneData } from "../../../interfaces/gameData.interface";
+
+const CAMERA_ALPHA = -Math.PI / 2;
+const CAMERA_BETA = Math.PI / 6;
+const CAMERA_RADIUS = 200;
 
 export default class SceneWrapper {
   scene!: Scene;
@@ -28,7 +33,7 @@ export default class SceneWrapper {
 
   constructor(
     private engine: Engine,
-    private meshLevelName: string = "testLevel.glb",
+    private sceneData: SceneData,
   ) {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
@@ -43,13 +48,14 @@ export default class SceneWrapper {
         this.scene,
         this.playerController,
         this.collisionDetector,
+        this.sceneData.enemies,
       );
 
       const camera = new ArcRotateCamera(
         "camera",
-        -Math.PI / 2,
-        Math.PI / 6,
-        200,
+        CAMERA_ALPHA,
+        CAMERA_BETA,
+        CAMERA_RADIUS,
         new Vector3(0, 0, 0),
         this.scene,
       );
@@ -101,7 +107,7 @@ export default class SceneWrapper {
     const level = await SceneLoader.ImportMeshAsync(
       null,
       import.meta.env.VITE_LEVEL_MODELS_PATH,
-      this.meshLevelName,
+      this.sceneData.meshLevelName,
       this.scene,
     );
 

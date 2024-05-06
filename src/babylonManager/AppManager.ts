@@ -16,6 +16,7 @@ export class AppManager {
   private _currentLevel: SceneWrapper | undefined;
   private _gameData: GameData | undefined;
   private _gameState: GAME_STATE = GAME_STATE.START;
+  private levelCounter: number = 0;
   private engine: Engine;
   private levelFactory;
 
@@ -25,7 +26,7 @@ export class AppManager {
     this.setGameData().then(() => {
       if (this._gameData) {
         this._currentLevel = this.levelFactory.createScene(
-          this._gameData.scenes[0],
+          this._gameData.scenes[this.levelCounter],
         );
         this.engine.runRenderLoop(() => {
           switch (this._gameState) {
@@ -43,10 +44,16 @@ export class AppManager {
               break;
             case GAME_STATE.GAME:
               this._currentLevel?.scene.render();
-              console.log("Game State: Game");
+              // console.log("Game State: Game");
               break;
             case GAME_STATE.LEVEL_COMPLETE:
               console.log("Game State: Level Complete");
+              this.levelCounter++;
+              if (this._gameData && this._gameData.scenes[this.levelCounter]) {
+                this._currentLevel = this.levelFactory.createScene(
+                  this._gameData.scenes[this.levelCounter],
+                );
+              }
               break;
             case GAME_STATE.GAME_OVER:
               console.log("Game State: Game Over");

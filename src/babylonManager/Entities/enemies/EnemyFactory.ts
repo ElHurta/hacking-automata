@@ -4,9 +4,10 @@ import Enemy from "./Enemy";
 import Chaser from "./Chaser";
 import Tower from "./Tower";
 import Sphere from "./Sphere";
+import { EnemyData } from "../../../interfaces/gameData.interface";
 
 export default class EnemyFactory {
-  createEnemy(enemyOption: enemyType, spawnPosition: Vector3): Enemy {
+  createEnemy(enemyOption: string, spawnPosition: Vector3): Enemy {
     switch (enemyOption) {
       case enemyType.CHASER:
         return new Chaser([], spawnPosition);
@@ -17,5 +18,14 @@ export default class EnemyFactory {
       default:
         throw new Error("Invalid enemy type");
     }
+  }
+
+  createEnemiesByList(enemies: EnemyData[]): Enemy[] {
+    return enemies.map((enemy) =>
+      this.createEnemy(
+        enemy.name,
+        new Vector3(enemy.spawnPosX, enemy.spawnPosY, enemy.spawnPosZ),
+      ),
+    );
   }
 }

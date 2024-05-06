@@ -1,21 +1,33 @@
 {
-	"scenes": [
-		{
-			"name": "level1",
-			"meshLevelName": "testLevel.glb",
-			"enemies": [
-				{
-					"name": "Chaser",
-					"spawnPosition": "0,15,50"
-				},
-				{
-					"name": "Chaser",
-					"spawnPosition": "0,0,-50"
-				}
-			],
-			"player": {
-				"spawnPosition": "0,0,0"
-			}
-		}
-	]
+  "scenes": [
+    {
+      "name": "level1",
+      "meshLevelName": "testLevel.glb",
+      "enemies": [
+        {
+          "name": "chaser",
+          "spawnPosX": 50,
+          "spawnPosY": 15,
+          "spawnPosZ": 25
+        },
+        {
+          "name": "chaser",
+          "spawnPosX": -50,
+          "spawnPosY": 15,
+          "spawnPosZ": 25
+        },
+        {
+          "name": "chaser",
+          "spawnPosX": -75,
+          "spawnPosY": 15,
+          "spawnPosZ": 40
+        }
+      ],
+      "player": {
+        "spawnPosX": 0,
+        "spawnPosY": 0,
+        "spawnPosZ": 0
+      }
+    }
+  ]
 }

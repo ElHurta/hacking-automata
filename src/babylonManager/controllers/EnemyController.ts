@@ -14,33 +14,30 @@ import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
 import { projectileType } from "../../enums/projectileType.enum";
 import EnemyFactory from "../entities/enemies/EnemyFactory";
 import Enemy from "../entities/enemies/Enemy";
+import { EnemyData } from "../../interfaces/gameData.interface";
 
 export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
   private enemyFactory = new EnemyFactory();
-  // private enemy = this.enemyFactory.createEnemy(
-  //   enemyType.CHASER,
-  //   new Vector3(0, 15, 50),
-  // );
+  private enemies: Enemy[] = [];
 
   constructor(
     private scene: Scene,
     private playerController: PlayerController,
     private collisionDetector: CollisionDetector,
+    private enemiesData: EnemyData[],
     private projectileController: ProjectileController = new ProjectileController(
       scene,
       collisionDetector,
     ),
   ) {
-    // this.loadEnemyMesh().then((enemyMeshes) => {
-    //   this.enemy.meshes = enemyMeshes;
-    //   this.setupEnemyMovement(playerController.playerMovingEntity);
-    //   this.setupEnemyShooting();
-    //   this.collisionDetector.addSceneEntityToList(this.enemy);
-    // });
+    this.createEnemies();
   }
 
-  setupEnemyMovement(enemyObject : Enemy, playerMovingEntity: YUKA.MovingEntity): void {
+  setupEnemyMovement(
+    enemyObject: Enemy,
+    playerMovingEntity: YUKA.MovingEntity,
+  ): void {
     const entityManager = new YUKA.EntityManager();
     const enemyVehicle = new YUKA.Vehicle();
     entityManager.add(enemyVehicle);
@@ -82,7 +79,7 @@ export default class EnemyController {
     this.scene.onBeforeRenderObservable.add(enemyUpdate);
   }
 
-  async loadEnemyMesh(enemyObject : Enemy): Promise<AbstractMesh[]> {
+  async loadEnemyMesh(enemyObject: Enemy): Promise<AbstractMesh[]> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       null,
       import.meta.env.VITE_MODELS_PATH,
@@ -136,5 +133,21 @@ export default class EnemyController {
     enemyObject.shootingFunction = shootingFunc;
 
     this.scene.registerBeforeRender(enemyObject.shootingFunction as () => void);
+  }
+
+  createEnemies(): void {
+    this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
+    console.log("Enemies:", this.enemies);
+    this.enemies.forEach((enemy) => {
+      this.loadEnemyMesh(enemy).then((enemyMeshes) => {
+        enemy.meshes = enemyMeshes;
+        this.setupEnemyMovement(
+          enemy,
+          this.playerController.playerMovingEntity,
+        );
+        this.setupEnemyShooting(enemy);
+        this.collisionDetector.addSceneEntityToList(enemy);
+      });
+    });
   }
 }
