@@ -19,6 +19,7 @@
     "@babylonjs/core": "^6.45.1",
     "@babylonjs/inspector": "^6.45.1",
     "@babylonjs/loaders": "^6.44.0",
+    "@types/node": "^20.12.10",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/yuka": "^0.7.4",
