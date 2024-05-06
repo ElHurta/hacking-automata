@@ -26,7 +26,10 @@ export default class SceneWrapper {
   enemyController: EnemyController | undefined;
   collisionDetector!: CollisionDetector;
 
-  constructor(private engine: Engine) {
+  constructor(
+    private engine: Engine,
+    private meshLevelName: string = "testLevel.glb",
+  ) {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
       this.collisionDetector = new CollisionDetector(this.scene);
@@ -55,6 +58,8 @@ export default class SceneWrapper {
         this.playerController.AssignCameraToPlayer(camera);
       });
 
+      this.CreateFakeGround();
+
       this.CreateLights();
     });
   }
@@ -77,7 +82,7 @@ export default class SceneWrapper {
       this.scene,
     );
 
-    hemiLight.intensity = 0.6;
+    hemiLight.intensity = 0.8;
   }
 
   CreateGizmos(customLight: Light): void {
@@ -93,11 +98,10 @@ export default class SceneWrapper {
   }
 
   async CreateEnvironment() {
-    
     const level = await SceneLoader.ImportMeshAsync(
       null,
-      "src/assets/levels/",
-      "testLevel.glb",
+      import.meta.env.VITE_LEVEL_MODELS_PATH,
+      this.meshLevelName,
       this.scene,
     );
 
@@ -117,7 +121,9 @@ export default class SceneWrapper {
         );
       }
     });
+  }
 
+  async CreateFakeGround() {
     const fakeGround = MeshBuilder.CreateGround(
       "fakeGround",
       { width: 1000, height: 1000 },

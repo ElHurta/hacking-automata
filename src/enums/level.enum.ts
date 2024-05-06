@@ -1,4 +1,4 @@
-export enum sceneEnum {
+export enum levelEnum {
   LEVEL_1 = "level1",
   LEVEL_2 = "level2",
   LEVEL_3 = "level3",

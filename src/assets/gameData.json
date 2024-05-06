@@ -1,0 +1,21 @@
+{
+	"scenes": [
+		{
+			"name": "level1",
+			"meshLevelName": "testLevel.glb",
+			"enemies": [
+				{
+					"name": "Chaser",
+					"spawnPosition": "0,15,50"
+				},
+				{
+					"name": "Chaser",
+					"spawnPosition": "0,0,-50"
+				}
+			],
+			"player": {
+				"spawnPosition": "0,0,0"
+			}
+		}
+	]
+}
