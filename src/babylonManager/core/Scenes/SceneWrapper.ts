@@ -1,30 +1,25 @@
 import {
-  Scene,
-  Engine,
-  Vector3,
-  HemisphericLight,
-  SceneLoader,
+  ActionManager,
   ArcRotateCamera,
   Color4,
-  ActionManager,
+  Engine,
+  GizmoManager,
+  GlowLayer,
+  HemisphericLight,
   Light,
   LightGizmo,
-  GizmoManager,
   MeshBuilder,
+  Scene,
+  SceneLoader,
   ShadowGenerator,
-  GlowLayer,
+  Vector3,
 } from "@babylonjs/core";
-import "@babylonjs/core/Physics/physicsEngineComponent";
-import "@babylonjs/loaders/glTF";
-import "@babylonjs/core/Debug/debugLayer";
-// import { Inspector } from "@babylonjs/inspector";
+import PlayerController from "../../controllers/PlayerController";
+import EnemyController from "../../controllers/EnemyController";
+import CollisionDetector from "../CollisionDetector";
+import Obstacle from "../../entities/Obstacle";
 
-import PlayerController from "./controllers/PlayerController";
-import EnemyController from "./controllers/EnemyController";
-import CollisionDetector from "./core/CollisionDetector";
-import Obstacle from "./entities/Obstacle";
-
-export class MainScene {
+export default class SceneWrapper {
   scene!: Scene;
   shadowGenerator: ShadowGenerator | undefined;
   playerController!: PlayerController;
@@ -32,7 +27,6 @@ export class MainScene {
   collisionDetector!: CollisionDetector;
 
   constructor(private engine: Engine) {
-
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
       this.collisionDetector = new CollisionDetector(this.scene);
@@ -99,8 +93,9 @@ export class MainScene {
   }
 
   async CreateEnvironment() {
+    
     const level = await SceneLoader.ImportMeshAsync(
-      "",
+      null,
       "src/assets/levels/",
       "testLevel.glb",
       this.scene,
@@ -110,7 +105,7 @@ export class MainScene {
       if (element.name.includes("UndestructibleBlock")) {
         element.checkCollisions = true;
         this.collisionDetector.addSceneEntityToList(
-          new Obstacle("Obstacle", [element], element.position)
+          new Obstacle("Obstacle", [element], element.position),
         );
       }
 
@@ -118,7 +113,7 @@ export class MainScene {
         element.checkCollisions = true;
         element.visibility = 0;
         this.collisionDetector.addSceneEntityToList(
-          new Obstacle("Obstacle", [element], element.position)
+          new Obstacle("Obstacle", [element], element.position),
         );
       }
     });

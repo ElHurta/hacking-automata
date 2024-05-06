@@ -13,15 +13,15 @@ import ProjectileController from "./ProjectileController";
 import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
 import { projectileType } from "../../enums/projectileType.enum";
 import EnemyFactory from "../entities/enemies/EnemyFactory";
-import { enemyType } from "../../enums/enemyType.enum";
+import Enemy from "../entities/enemies/Enemy";
 
 export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
   private enemyFactory = new EnemyFactory();
-  private enemy = this.enemyFactory.createEnemy(
-    enemyType.CHASER,
-    new Vector3(0, 15, 50),
-  );
+  // private enemy = this.enemyFactory.createEnemy(
+  //   enemyType.CHASER,
+  //   new Vector3(0, 15, 50),
+  // );
 
   constructor(
     private scene: Scene,
@@ -32,27 +32,27 @@ export default class EnemyController {
       collisionDetector,
     ),
   ) {
-    this.loadEnemyMesh().then((enemyMeshes) => {
-      this.enemy.meshes = enemyMeshes;
-      this.setupEnemyMovement(playerController.playerMovingEntity);
-      this.setupEnemyShooting();
-      this.collisionDetector.addSceneEntityToList(this.enemy);
-    });
+    // this.loadEnemyMesh().then((enemyMeshes) => {
+    //   this.enemy.meshes = enemyMeshes;
+    //   this.setupEnemyMovement(playerController.playerMovingEntity);
+    //   this.setupEnemyShooting();
+    //   this.collisionDetector.addSceneEntityToList(this.enemy);
+    // });
   }
 
-  setupEnemyMovement(playerMovingEntity: YUKA.MovingEntity): void {
+  setupEnemyMovement(enemyObject : Enemy, playerMovingEntity: YUKA.MovingEntity): void {
     const entityManager = new YUKA.EntityManager();
     const enemyVehicle = new YUKA.Vehicle();
     entityManager.add(enemyVehicle);
 
     enemyVehicle.position.set(
-      this.enemy.spawnPosition.x,
-      this.enemy.spawnPosition.y,
-      this.enemy.spawnPosition.z,
+      enemyObject.spawnPosition.x,
+      enemyObject.spawnPosition.y,
+      enemyObject.spawnPosition.z,
     );
 
-    enemyVehicle.setRenderComponent(this.enemy.meshes[0], syncPosition);
-    enemyVehicle.maxSpeed = this.enemy.movementSpeed;
+    enemyVehicle.setRenderComponent(enemyObject.meshes[0], syncPosition);
+    enemyVehicle.maxSpeed = enemyObject.movementSpeed;
 
     const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
     enemyVehicle.steering.add(seekBehavior);
@@ -66,11 +66,11 @@ export default class EnemyController {
     };
 
     const enemyLifeCheck = () => {
-      if (this.enemy.lifePoints <= 0) {
+      if (enemyObject.lifePoints <= 0) {
         this.scene.unregisterBeforeRender(
-          this.enemy.shootingFunction as () => void,
+          enemyObject.shootingFunction as () => void,
         );
-        this.enemy.meshes.forEach((mesh) => {
+        enemyObject.meshes.forEach((mesh) => {
           mesh.dispose();
         });
         this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
@@ -82,7 +82,7 @@ export default class EnemyController {
     this.scene.onBeforeRenderObservable.add(enemyUpdate);
   }
 
-  async loadEnemyMesh(): Promise<AbstractMesh[]> {
+  async loadEnemyMesh(enemyObject : Enemy): Promise<AbstractMesh[]> {
     const { meshes } = await SceneLoader.ImportMeshAsync(
       null,
       import.meta.env.VITE_MODELS_PATH,
@@ -106,7 +106,7 @@ export default class EnemyController {
 
     enemyRootMesh.parent = enemyBox;
     enemyRootMesh.rotate(Vector3.Up(), Math.PI);
-    enemyBox.position = this.enemy.spawnPosition;
+    enemyBox.position = enemyObject.spawnPosition;
     enemyBox.rotationQuaternion = null;
 
     enemyBox.isVisible = false;
@@ -122,19 +122,19 @@ export default class EnemyController {
     return [enemyBox, ...meshes];
   }
 
-  setupEnemyShooting(): void {
+  setupEnemyShooting(enemyObject: Enemy): void {
     const shootingFunc = () => {
       this.projectileController.shootProjectile(
-        this.enemy.meshes[0],
+        enemyObject.meshes[0],
         this.projectileFactory.createProjectile(
           projectileType.ENEMY,
-          this.enemy.meshes[0].forward.clone(),
+          enemyObject.meshes[0].forward.clone(),
         ),
       );
     };
 
-    this.enemy.shootingFunction = shootingFunc;
+    enemyObject.shootingFunction = shootingFunc;
 
-    this.scene.registerBeforeRender(this.enemy.shootingFunction as () => void);
+    this.scene.registerBeforeRender(enemyObject.shootingFunction as () => void);
   }
 }

@@ -1,0 +1,17 @@
+{
+  "scenes": [
+    {
+      "name": "Level1",
+      "enemies": [
+        {
+          "name": "Chaser",
+          "spawnPosition": "0,15,50"
+        },
+        {
+          "name": "Chaser",
+          "spawnPosition": "0,0,-50"
+        }
+      ]
+    }
+  ]
+}
