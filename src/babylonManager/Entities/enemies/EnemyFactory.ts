@@ -7,14 +7,18 @@ import Sphere from "./Sphere";
 import { EnemyData } from "../../../interfaces/gameData.interface";
 
 export default class EnemyFactory {
-  createEnemy(enemyOption: string, spawnPosition: Vector3): Enemy {
+  createEnemy(
+    enemyOption: string,
+    concreteName: string,
+    spawnPosition: Vector3,
+  ): Enemy {
     switch (enemyOption) {
       case enemyType.CHASER:
-        return new Chaser([], spawnPosition);
+        return new Chaser([], spawnPosition, concreteName);
       case enemyType.SPHERE:
-        return new Sphere([], spawnPosition);
+        return new Sphere([], spawnPosition, concreteName);
       case enemyType.TOWER:
-        return new Tower([], spawnPosition);
+        return new Tower([], spawnPosition, concreteName);
       default:
         throw new Error("Invalid enemy type");
     }
@@ -24,6 +28,7 @@ export default class EnemyFactory {
     return enemies.map((enemy) =>
       this.createEnemy(
         enemy.name,
+        enemy.concreteName,
         new Vector3(enemy.spawnPosX, enemy.spawnPosY, enemy.spawnPosZ),
       ),
     );

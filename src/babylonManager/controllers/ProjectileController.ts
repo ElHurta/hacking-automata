@@ -2,7 +2,6 @@ import { AbstractMesh, Scene, SceneLoader } from "@babylonjs/core";
 import Projectile from "../entities/projectiles/Projectile";
 import CollisionDetector from "../core/CollisionDetector";
 
-// Note: Some values are negative to make the projectile go forward, for some reason BabylonJS has the opposite direction on all my models 🙂
 export default class ProjectileController {
   constructor(
     private scene: Scene,

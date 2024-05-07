@@ -7,6 +7,6 @@ export default class Obstacle extends SceneEntity {
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
   ) {
-    super(name, meshes, spawnPosition);
+    super(name, '', meshes, spawnPosition);
   }
 }

@@ -7,13 +7,14 @@ export default class Sphere extends Enemy {
   constructor(
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
+    concreteName: string,
     name: string = "Sphere",
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 60,
     movementSpeed: number = 30,
     private _hasShield: boolean = false,
   ) {
-    super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
   }
 
   public get hasShield(): boolean {

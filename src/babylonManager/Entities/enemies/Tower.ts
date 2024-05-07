@@ -6,11 +6,12 @@ export default class Tower extends Enemy {
   constructor(
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
+    concreteName: string,
     name = "Tower",
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 45,
     movementSpeed: number = 0,
   ) {
-    super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
   }
 }

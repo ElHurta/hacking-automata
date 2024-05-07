@@ -64,6 +64,7 @@ export default class EnemyController {
 
     const enemyLifeCheck = () => {
       if (enemyObject.lifePoints <= 0) {
+        console.log("Enemy destroyed");
         this.scene.unregisterBeforeRender(
           enemyObject.shootingFunction as () => void,
         );
@@ -119,9 +120,12 @@ export default class EnemyController {
     return [enemyBox, ...meshes];
   }
 
-  setupEnemyShooting(enemyObject: Enemy): void {
+  setupEnemyShooting(
+    enemyObject: Enemy,
+    enemyProjectileController: ProjectileController,
+  ): void {
     const shootingFunc = () => {
-      this.projectileController.shootProjectile(
+      enemyProjectileController.shootProjectile(
         enemyObject.meshes[0],
         this.projectileFactory.createProjectile(
           projectileType.ENEMY,
@@ -137,6 +141,7 @@ export default class EnemyController {
 
   createEnemies(): void {
     this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
+
     console.log("Enemies:", this.enemies);
     this.enemies.forEach((enemy) => {
       this.loadEnemyMesh(enemy).then((enemyMeshes) => {
@@ -145,7 +150,10 @@ export default class EnemyController {
           enemy,
           this.playerController.playerMovingEntity,
         );
-        this.setupEnemyShooting(enemy);
+        this.setupEnemyShooting(
+          enemy,
+          new ProjectileController(this.scene, this.collisionDetector),
+        );
         this.collisionDetector.addSceneEntityToList(enemy);
       });
     });

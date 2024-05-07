@@ -7,13 +7,14 @@ export default class Enemy extends SceneEntity {
   
   constructor(
     name: string,
+    concreteName: string,
     meshes: AbstractMesh[],
     spawnPosition: Vector3,
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 30,
     movementSpeed: number = 30,
   ) {
-    super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
   }
 
   public get shootingFunction(): (() => void) | undefined {

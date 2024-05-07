@@ -70,7 +70,7 @@ export default class CollisionDetector {
             entity.lifePoints -= 1;
             if (entity.lifePoints <= 0) {
               this.sceneEntities = this.sceneEntities.filter(
-                (e) => e.name !== "Chaser",
+                (e) => e.concreteName !== entity.concreteName,
               );
             }
           }

@@ -11,6 +11,6 @@ export default class Player extends SceneEntity {
     lifePoints: number = 3,
     movementSpeed: number = 0.7,
   ) {
-    super(name, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    super(name, "cutePlayer", meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
   }
 }

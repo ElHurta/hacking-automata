@@ -4,6 +4,7 @@ import { MovingEntity } from "yuka";
 export default abstract class SceneEntity {
   constructor(
     protected _name: string = "",
+    protected _concreteName: string = "",
     protected _meshes: AbstractMesh[] = [],
     protected _spawnPosition: Vector3,
     protected _movingEntity?: MovingEntity,
@@ -13,6 +14,10 @@ export default abstract class SceneEntity {
 
   public get name(): string {
     return this._name;
+  }
+
+  public get concreteName(): string {
+    return this._concreteName;
   }
 
   public get meshes(): AbstractMesh[] {
