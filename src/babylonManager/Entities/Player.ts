@@ -10,7 +10,29 @@ export default class Player extends SceneEntity {
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 3,
     movementSpeed: number = 0.7,
+    private _shootingDelay: number = 150,
+    private _lastShotTime: number = 0,
   ) {
-    super(name, "cutePlayer", meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    super(
+      name,
+      "cutePlayer",
+      meshes,
+      spawnPosition,
+      movingEntity,
+      lifePoints,
+      movementSpeed,
+    );
+  }
+
+  public get shootingDelay(): number {
+    return this._shootingDelay;
+  }
+
+  public get lastShotTime(): number {
+    return this._lastShotTime;
+  }
+
+  public set lastShotTime(time: number) {
+    this._lastShotTime = time;
   }
 }

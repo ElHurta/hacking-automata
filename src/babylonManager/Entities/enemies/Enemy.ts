@@ -13,6 +13,8 @@ export default class Enemy extends SceneEntity {
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 30,
     movementSpeed: number = 30,
+    protected _shootingDelay: number,
+    protected _lastShotTime: number = 0,
   ) {
     super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
   }
@@ -23,5 +25,17 @@ export default class Enemy extends SceneEntity {
 
   public set shootingFunction(func: () => void) {
     this.shootingFunc = func;
+  }
+
+  public get shootingDelay(): number {
+    return this._shootingDelay;
+  }
+
+  public get lastShotTime(): number {
+    return this._lastShotTime;
+  }
+
+  public set lastShotTime(time: number) {
+    this._lastShotTime = time;
   }
 }

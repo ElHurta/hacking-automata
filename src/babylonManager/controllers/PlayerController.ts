@@ -133,13 +133,16 @@ export default class PlayerController {
       }
 
       if (keyStatus.space) {
-        this.projectileController.shootProjectile(
-          this.player.meshes[0],
-          this.projectileFactory.createProjectile(
-            projectileType.PLAYER,
-            this.player.meshes[0].forward.clone(),
-          ),
-        );
+        if (Date.now() - this.player.lastShotTime > this.player.shootingDelay) {
+          this.player.lastShotTime = Date.now();
+          this.projectileController.shootProjectile(
+            this.player.meshes[0],
+            this.projectileFactory.createProjectile(
+              projectileType.PLAYER,
+              this.player.meshes[0].forward.clone(),
+            ),
+          );
+        }
       }
     });
 

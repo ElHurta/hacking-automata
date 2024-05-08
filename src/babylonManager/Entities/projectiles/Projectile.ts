@@ -10,7 +10,6 @@ export default abstract class Projectile {
 
   constructor(
     protected _meshName: string,
-    protected _shootingDelay: number,
     protected _speed: number,
     protected _direction: Vector3,
     protected _damage: number,
@@ -30,11 +29,7 @@ export default abstract class Projectile {
   set mesh(mesh: AbstractMesh) {
     this._mesh = mesh;
   }
-
-  get shootingDelay(): number {
-    return this._shootingDelay;
-  }
-
+  
   get speed(): number {
     return this._speed;
   }

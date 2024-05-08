@@ -125,13 +125,16 @@ export default class EnemyController {
     enemyProjectileController: ProjectileController,
   ): void {
     const shootingFunc = () => {
-      enemyProjectileController.shootProjectile(
-        enemyObject.meshes[0],
-        this.projectileFactory.createProjectile(
-          projectileType.ENEMY,
-          enemyObject.meshes[0].forward.clone(),
-        ),
-      );
+      if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
+        enemyObject.lastShotTime = Date.now();
+        enemyProjectileController.shootProjectile(
+          enemyObject.meshes[0],
+          this.projectileFactory.createProjectile(
+            projectileType.ENEMY,
+            enemyObject.meshes[0].forward.clone(),
+          ),
+        );
+      }
     };
 
     enemyObject.shootingFunction = shootingFunc;
@@ -150,10 +153,7 @@ export default class EnemyController {
           enemy,
           this.playerController.playerMovingEntity,
         );
-        this.setupEnemyShooting(
-          enemy,
-          new ProjectileController(this.scene, this.collisionDetector),
-        );
+        this.setupEnemyShooting(enemy, this.projectileController);
         this.collisionDetector.addSceneEntityToList(enemy);
       });
     });

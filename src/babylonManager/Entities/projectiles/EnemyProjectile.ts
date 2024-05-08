@@ -2,7 +2,6 @@ import { Vector3 } from "@babylonjs/core";
 import Projectile from "./Projectile";
 
 const MESH_NAME = "desBullet01.glb";
-const SHOOTING_DELAY = 600;
 const TRAVEL_SPEED = 0.8;
 const DAMAGE = 1;
 const IS_DESTRUCTIBLE = true;
@@ -12,7 +11,6 @@ export default class EnemyProjectile extends Projectile {
   constructor(projectileDirection: Vector3) {
     super(
       MESH_NAME,
-      SHOOTING_DELAY,
       TRAVEL_SPEED,
       projectileDirection,
       DAMAGE,
