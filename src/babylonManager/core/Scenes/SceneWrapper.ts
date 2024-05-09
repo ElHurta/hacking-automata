@@ -40,6 +40,8 @@ export default class SceneWrapper {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
       this.collisionDetector = new CollisionDetector(this.scene);
+      this.collisionDetector.playerEliminatedObservable.subscribe(this.goToGameOver.bind(this));
+
       this.scene.actionManager = new ActionManager(this.scene);
       this.playerController = new PlayerController(
         this.scene,
@@ -148,6 +150,11 @@ export default class SceneWrapper {
   private goToLevelComplete(): void {
     console.log("Level Complete");
     //this.gameState = GAME_STATE.LEVEL_COMPLETE;
+  }
+
+  private goToGameOver(): void {
+    console.log("Game Over");
+    //this.gameState = GAME_STATE.GAME_OVER;
   }
 
   public get Scene(): Scene {

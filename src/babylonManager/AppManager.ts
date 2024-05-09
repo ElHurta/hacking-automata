@@ -48,6 +48,7 @@ export class AppManager {
                   this._gameData.scenes[this.levelCounter],
                   this._gameState,
                 );
+                this._gameState = GAME_STATE.GAME;
               }
               break;
             case GAME_STATE.GAME_OVER:

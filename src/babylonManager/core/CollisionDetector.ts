@@ -1,10 +1,12 @@
 import { Scene } from "@babylonjs/core";
 import Projectile from "../entities/projectiles/Projectile";
 import SceneEntity from "../entities/SceneEntity";
+import Observable from "../../utils/Observable";
 
 export default class CollisionDetector {
   private projectilesList: Projectile[] = [];
   private sceneEntities: SceneEntity[] = [];
+  public playerEliminatedObservable = new Observable();
 
   constructor(private scene: Scene) {
     this.scene.onAfterRenderObservable.add(() => {
@@ -57,6 +59,12 @@ export default class CollisionDetector {
         if (entity.name === "Player" && !projectile.isPlayerProjectile) {
           if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
             entity.lifePoints -= 1;
+            if (entity.lifePoints <= 0) {
+              // this.sceneEntities = this.sceneEntities.filter(
+              //   (e) => e.concreteName !== entity.concreteName,
+              // );
+              this.playerEliminatedObservable.notify();
+            }
             this.disposeProjectile(projectile);
           }
         }
