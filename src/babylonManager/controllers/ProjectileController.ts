@@ -1,4 +1,4 @@
-import { AbstractMesh, Scene, SceneLoader } from "@babylonjs/core";
+import { AbstractMesh, MeshBuilder, Scene, SceneLoader } from "@babylonjs/core";
 import Projectile from "../entities/projectiles/Projectile";
 import CollisionDetector from "../core/CollisionDetector";
 
@@ -31,16 +31,32 @@ export default class ProjectileController {
       this.scene,
     );
 
-    const projectileModel = meshes[0];
+    const projectileRootMesh = meshes[0];
+    const boundingBox = meshes[1].getBoundingInfo().boundingBox;
+
+    const projectileBox = MeshBuilder.CreateBox(
+      "projectileBox",
+      {
+        width: boundingBox.extendSizeWorld.x * 2,
+        height: boundingBox.extendSizeWorld.y * 2,
+        depth: boundingBox.extendSizeWorld.z * 2,
+      },
+      this.scene,
+    );
+
+    projectileRootMesh.parent = projectileBox;
     const shooterPosition = shooter.position.clone();
 
+    projectileBox.isVisible = false;
+    projectileBox.isPickable = false;
+
     // Set Bullet spawn position at the tip of the ship
-    projectileModel.position = shooterPosition.add(shooter.forward.scale(4));
-    projectileModel.rotation = shooter.rotation.clone();
+    projectileBox.position = shooterPosition.add(shooter.forward.scale(4));
+    projectileBox.rotation = shooter.rotation.clone();
 
+    projectile.mesh = projectileBox;
     this.collisionDetector.addProjectileToList(projectile);
-    projectile.mesh = projectileModel;
 
-    return projectileModel;
+    return projectileBox;
   }
 }

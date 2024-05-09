@@ -44,10 +44,8 @@ export default class CollisionDetector {
   private handleProjectileCollisions(): void {
     const projectiles = [...this.projectilesList];
     projectiles.forEach((projectile) => {
-
       // Collision with entities
       this.sceneEntities.forEach((entity) => {
-
         // Obstacle Collision
         if (entity.name === "Obstacle") {
           if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
@@ -73,6 +71,20 @@ export default class CollisionDetector {
                 (e) => e.concreteName !== entity.concreteName,
               );
             }
+          }
+        }
+      });
+
+      // Collision with other projectiles
+      this.projectilesList.forEach((otherProjectile) => {
+        if (projectile.isPlayerProjectile) {
+          if (
+            projectile.mesh.intersectsMesh(otherProjectile.mesh, true) &&
+            projectile !== otherProjectile &&
+            !otherProjectile.isPlayerProjectile
+          ) {
+            this.disposeProjectile(projectile);
+            this.disposeProjectile(otherProjectile);
           }
         }
       });
