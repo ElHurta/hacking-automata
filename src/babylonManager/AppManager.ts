@@ -3,15 +3,8 @@ import SceneWrapper from "./core/Scenes/SceneWrapper";
 import { fetchGameData } from "./core/LevelDataReader";
 import { GameData } from "../interfaces/gameData.interface";
 import LevelFactory from "./core/LevelFactory";
+import { GAME_STATE } from "../enums/gameState.enum";
 
-enum GAME_STATE {
-  START,
-  LOADING,
-  MAIN_MENU,
-  GAME,
-  LEVEL_COMPLETE,
-  GAME_OVER,
-}
 export class AppManager {
   private _currentLevel: SceneWrapper | undefined;
   private _gameData: GameData | undefined;
@@ -27,6 +20,7 @@ export class AppManager {
       if (this._gameData) {
         this._currentLevel = this.levelFactory.createScene(
           this._gameData.scenes[this.levelCounter],
+          this._gameState,
         );
         this.engine.runRenderLoop(() => {
           switch (this._gameState) {
@@ -52,6 +46,7 @@ export class AppManager {
               if (this._gameData && this._gameData.scenes[this.levelCounter]) {
                 this._currentLevel = this.levelFactory.createScene(
                   this._gameData.scenes[this.levelCounter],
+                  this._gameState,
                 );
               }
               break;

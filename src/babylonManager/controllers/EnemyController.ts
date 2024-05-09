@@ -15,11 +15,14 @@ import { projectileType } from "../../enums/projectileType.enum";
 import EnemyFactory from "../entities/enemies/EnemyFactory";
 import Enemy from "../entities/enemies/Enemy";
 import { EnemyData } from "../../interfaces/gameData.interface";
+import Observable from "../../utils/Observable";
 
 export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
   private enemyFactory = new EnemyFactory();
   private enemies: Enemy[] = [];
+  
+  public enemiesEliminatedObservable = new Observable();
 
   constructor(
     private scene: Scene,
@@ -64,14 +67,18 @@ export default class EnemyController {
 
     const enemyLifeCheck = () => {
       if (enemyObject.lifePoints <= 0) {
-        console.log("Enemy destroyed");
         this.scene.unregisterBeforeRender(
           enemyObject.shootingFunction as () => void,
         );
         enemyObject.meshes.forEach((mesh) => {
           mesh.dispose();
         });
+        this.enemies = this.enemies.filter((enemy) => enemy !== enemyObject);
         this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
+
+        if (this.enemies.length === 0) {
+          this.enemiesEliminatedObservable.notify();
+        }
 
         return;
       }

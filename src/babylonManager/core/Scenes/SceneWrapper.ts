@@ -19,6 +19,7 @@ import EnemyController from "../../controllers/EnemyController";
 import CollisionDetector from "../CollisionDetector";
 import Obstacle from "../../entities/Obstacle";
 import { SceneData } from "../../../interfaces/gameData.interface";
+import { GAME_STATE } from "../../../enums/gameState.enum";
 
 const CAMERA_ALPHA = -Math.PI / 2;
 const CAMERA_BETA = Math.PI / 6;
@@ -34,6 +35,7 @@ export default class SceneWrapper {
   constructor(
     private engine: Engine,
     private sceneData: SceneData,
+    private gameState: GAME_STATE,
   ) {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
@@ -50,6 +52,8 @@ export default class SceneWrapper {
         this.collisionDetector,
         this.sceneData.enemies,
       );
+
+      this.enemyController.enemiesEliminatedObservable.subscribe(this.goToLevelComplete.bind(this));
 
       const camera = new ArcRotateCamera(
         "camera",
@@ -139,6 +143,11 @@ export default class SceneWrapper {
     fakeGround.position.y = 14;
     fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
+  }
+
+  private goToLevelComplete(): void {
+    console.log("Level Complete");
+    //this.gameState = GAME_STATE.LEVEL_COMPLETE;
   }
 
   public get Scene(): Scene {
