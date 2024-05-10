@@ -21,7 +21,7 @@ export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
   private enemyFactory = new EnemyFactory();
   private enemies: Enemy[] = [];
-  
+
   public enemiesEliminatedObservable = new Observable();
 
   constructor(
@@ -88,10 +88,17 @@ export default class EnemyController {
   }
 
   async loadEnemyMesh(enemyObject: Enemy): Promise<AbstractMesh[]> {
+    let meshName = "";
+    if (enemyObject.name === "Chaser") {
+      meshName = import.meta.env.VITE_CHASER_ENEMY_MODEL;
+    } else if (enemyObject.name === "Sphere") {
+      meshName = import.meta.env.VITE_SPHERE_ENEMY_MODEL;
+    }
+
     const { meshes } = await SceneLoader.ImportMeshAsync(
       null,
       import.meta.env.VITE_MODELS_PATH,
-      import.meta.env.VITE_CHASER_ENEMY_MODEL,
+      meshName,
       this.scene,
     );
 

@@ -37,25 +37,11 @@
       "meshLevelName": "level01Model.glb",
       "enemies": [
         {
-          "name": "chaser",
-          "concreteName": "chaser1",
-          "spawnPosX": 50,
+          "name": "sphere",
+          "concreteName": "sphere1",
+          "spawnPosX": 0,
           "spawnPosY": 15,
           "spawnPosZ": 25
-        },
-        {
-          "name": "chaser",
-          "concreteName": "chaser2",
-          "spawnPosX": -50,
-          "spawnPosY": 15,
-          "spawnPosZ": 25
-        },
-        {
-          "name": "chaser",
-          "concreteName": "chaser3",
-          "spawnPosX": -75,
-          "spawnPosY": 15,
-          "spawnPosZ": 40
         }
       ],
       "player": {

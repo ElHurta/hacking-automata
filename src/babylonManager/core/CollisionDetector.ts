@@ -70,7 +70,10 @@ export default class CollisionDetector {
         }
 
         // Enemy Collision
-        if (entity.name === "Chaser" && projectile.isPlayerProjectile) {
+        if (
+          (entity.name === "Chaser" || entity.name === "Sphere") &&
+          projectile.isPlayerProjectile
+        ) {
           if (projectile.mesh.intersectsMesh(entity.meshes[0], true)) {
             this.disposeProjectile(projectile);
             entity.lifePoints -= 1;
