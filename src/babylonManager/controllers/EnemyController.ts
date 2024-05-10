@@ -54,8 +54,11 @@ export default class EnemyController {
     enemyVehicle.setRenderComponent(enemyObject.meshes[0], syncPosition);
     enemyVehicle.maxSpeed = enemyObject.movementSpeed;
 
-    const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
-    enemyVehicle.steering.add(seekBehavior);
+    // Set chaser behavior:
+    if(enemyObject.name === "Chaser"){
+      const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
+      enemyVehicle.steering.add(seekBehavior);
+    }
 
     const time = new YUKA.Time();
 
