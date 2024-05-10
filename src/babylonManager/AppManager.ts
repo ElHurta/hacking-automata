@@ -13,6 +13,14 @@ export class AppManager {
   private engine: Engine;
   private levelFactory;
 
+  public goToCompleteLevel: () => void = () => {
+    this._gameState = GAME_STATE.LEVEL_COMPLETE;
+  };
+
+  public goToGameOver: () => void = () => {
+    this._gameState = GAME_STATE.GAME_OVER;
+  };
+
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(this.canvas, true);
     this.levelFactory = new LevelFactory(this.engine);
@@ -20,9 +28,11 @@ export class AppManager {
       if (this._gameData) {
         this._currentLevel = this.levelFactory.createScene(
           this._gameData.scenes[this.levelCounter],
-          this._gameState,
+          this.goToCompleteLevel,
+          this.goToGameOver,
         );
         this.engine.runRenderLoop(() => {
+          console.log("Game State:", this._gameState);
           switch (this._gameState) {
             case GAME_STATE.START:
               console.log("Game State: Start");
@@ -38,18 +48,20 @@ export class AppManager {
               break;
             case GAME_STATE.GAME:
               this._currentLevel?.scene.render();
-              // console.log("Game State: Game");
               break;
             case GAME_STATE.LEVEL_COMPLETE:
-              console.log("Game State: Level Complete");
+              this._currentLevel?.scene.dispose();
               this.levelCounter++;
               if (this._gameData && this._gameData.scenes[this.levelCounter]) {
+                console.log("Creating new level");
                 this._currentLevel = this.levelFactory.createScene(
                   this._gameData.scenes[this.levelCounter],
-                  this._gameState,
+                  this.goToCompleteLevel,
+                  this.goToGameOver,
                 );
-                this._gameState = GAME_STATE.GAME;
               }
+              console.log("Game State: Level Complete");
+              this._gameState = GAME_STATE.GAME;
               break;
             case GAME_STATE.GAME_OVER:
               console.log("Game State: Game Over");

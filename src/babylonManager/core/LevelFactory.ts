@@ -2,17 +2,31 @@ import { Engine } from "@babylonjs/core";
 import { levelEnum } from "../../enums/level.enum";
 import { SceneData } from "../../interfaces/gameData.interface";
 import { LevelOne } from "./Scenes/LevelOne";
-import { GAME_STATE } from "../../enums/gameState.enum";
+import { LevelTwo } from "./Scenes/LevelTwo";
 
 export default class LevelFactory {
   constructor(private engine: Engine) {}
 
-  createScene(sceneData: SceneData, gameState: GAME_STATE) {
+  createScene(
+    sceneData: SceneData,
+    goToCompleteLevel: () => void,
+    goToGameOver: () => void,
+  ) {
     switch (sceneData.name) {
       case levelEnum.LEVEL_1:
-        return new LevelOne(this.engine, sceneData, gameState);
-      //   case levelEnum.LEVEL_2:
-      //     return new LevelTwo();
+        return new LevelOne(
+          this.engine,
+          sceneData,
+          goToCompleteLevel,
+          goToGameOver,
+        );
+      case levelEnum.LEVEL_2:
+        return new LevelTwo(
+          this.engine,
+          sceneData,
+          goToCompleteLevel,
+          goToGameOver,
+        );
       //   case levelEnum.LEVEL_3:
       //     return new LevelThree();
       //   case levelEnum.LEVEL_4:

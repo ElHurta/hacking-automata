@@ -1,3 +1,6 @@
+import "@babylonjs/loaders/glTF";
+import "@babylonjs/core/Debug/debugLayer";
+
 import {
   ActionManager,
   ArcRotateCamera,
@@ -19,7 +22,6 @@ import EnemyController from "../../controllers/EnemyController";
 import CollisionDetector from "../CollisionDetector";
 import Obstacle from "../../entities/Obstacle";
 import { SceneData } from "../../../interfaces/gameData.interface";
-import { GAME_STATE } from "../../../enums/gameState.enum";
 
 const CAMERA_ALPHA = -Math.PI / 2;
 const CAMERA_BETA = Math.PI / 6;
@@ -35,12 +37,15 @@ export default class SceneWrapper {
   constructor(
     private engine: Engine,
     private sceneData: SceneData,
-    private gameState: GAME_STATE,
+    private goToLevelComplete: () => void,
+    private goToGameOver: () => void,
   ) {
     this.CreateNewScene().then((scene) => {
       this.scene = scene;
       this.collisionDetector = new CollisionDetector(this.scene);
-      this.collisionDetector.playerEliminatedObservable.subscribe(this.goToGameOver.bind(this));
+      this.collisionDetector.playerEliminatedObservable.subscribe(() => {
+        this.goToGameOver();
+      });
 
       this.scene.actionManager = new ActionManager(this.scene);
       this.playerController = new PlayerController(
@@ -55,7 +60,9 @@ export default class SceneWrapper {
         this.sceneData.enemies,
       );
 
-      this.enemyController.enemiesEliminatedObservable.subscribe(this.goToLevelComplete.bind(this));
+      this.enemyController.enemiesEliminatedObservable.subscribe(() => {
+        this.goToLevelComplete();
+      });
 
       const camera = new ArcRotateCamera(
         "camera",
@@ -145,16 +152,6 @@ export default class SceneWrapper {
     fakeGround.position.y = 14;
     fakeGround.enablePointerMoveEvents = true;
     fakeGround.visibility = 0;
-  }
-
-  private goToLevelComplete(): void {
-    console.log("Level Complete");
-    //this.gameState = GAME_STATE.LEVEL_COMPLETE;
-  }
-
-  private goToGameOver(): void {
-    console.log("Game Over");
-    //this.gameState = GAME_STATE.GAME_OVER;
   }
 
   public get Scene(): Scene {
