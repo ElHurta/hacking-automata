@@ -32,7 +32,6 @@ export class AppManager {
           this.goToGameOver,
         );
         this.engine.runRenderLoop(() => {
-          console.log("Game State:", this._gameState);
           switch (this._gameState) {
             case GAME_STATE.START:
               console.log("Game State: Start");
@@ -75,7 +74,6 @@ export class AppManager {
   async setGameData() {
     try {
       this._gameData = await fetchGameData();
-      console.log("Game Data:", this._gameData);
     } catch (error) {
       console.error("Error:", error);
       throw error;

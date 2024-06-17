@@ -7,7 +7,10 @@ import {
 } from "@babylonjs/core";
 import * as YUKA from "yuka";
 import PlayerController from "./PlayerController";
-import { syncPosition } from "../../utils/setRenderer";
+import {
+  syncPositionDefault,
+  syncPositionSphere,
+} from "../../utils/setRenderer";
 import CollisionDetector from "../core/CollisionDetector";
 import ProjectileController from "./ProjectileController";
 import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
@@ -50,14 +53,52 @@ export default class EnemyController {
       enemyObject.spawnPosition.y,
       enemyObject.spawnPosition.z,
     );
+    console.log(enemyObject.spawnPosition, enemyVehicle.position);
 
-    enemyVehicle.setRenderComponent(enemyObject.meshes[0], syncPosition);
+    const leftToRightPath = new YUKA.Path();
+    leftToRightPath.add(
+      new YUKA.Vector3(
+        enemyObject.spawnPosition.x,
+        enemyObject.spawnPosition.y,
+        enemyObject.spawnPosition.z,
+      ),
+    );
+    leftToRightPath.add(
+      new YUKA.Vector3(
+        enemyObject.spawnPosition.x - 10,
+        enemyObject.spawnPosition.y,
+        enemyObject.spawnPosition.z,
+      ),
+    );
+    leftToRightPath.add(
+      new YUKA.Vector3(
+        enemyObject.spawnPosition.x + 10,
+        enemyObject.spawnPosition.y,
+        enemyObject.spawnPosition.z,
+      ),
+    );
+    leftToRightPath.loop = true;
     enemyVehicle.maxSpeed = enemyObject.movementSpeed;
 
     // Set chaser behavior:
-    if(enemyObject.name === "Chaser"){
+    if (enemyObject.name === "Chaser") {
+      enemyVehicle.setRenderComponent(
+        enemyObject.meshes[0],
+        syncPositionDefault,
+      );
+
       const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
       enemyVehicle.steering.add(seekBehavior);
+    }
+
+    if (enemyObject.name === "Sphere") {
+      enemyVehicle.setRenderComponent(
+        enemyObject.meshes[0],
+        syncPositionSphere,
+      );
+
+      const pathBehavior = new YUKA.FollowPathBehavior(leftToRightPath);
+      enemyVehicle.steering.add(pathBehavior);
     }
 
     const time = new YUKA.Time();
@@ -66,6 +107,16 @@ export default class EnemyController {
       const delta = time.update().getDelta();
       entityManager.update(delta);
       enemyLifeCheck();
+
+      if (enemyObject.name === "Sphere") {
+        enemyObject.meshes[0].lookAt(
+          new Vector3(
+            playerMovingEntity.position.x,
+            playerMovingEntity.position.y,
+            playerMovingEntity.position.z,
+          ),
+        );
+      }
     };
 
     const enemyLifeCheck = () => {
@@ -161,8 +212,6 @@ export default class EnemyController {
 
   createEnemies(): void {
     this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
-
-    console.log("Enemies:", this.enemies);
     this.enemies.forEach((enemy) => {
       this.loadEnemyMesh(enemy).then((enemyMeshes) => {
         enemy.meshes = enemyMeshes;

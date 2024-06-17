@@ -13,7 +13,7 @@ export default class Sphere extends Enemy {
     name: string = "Sphere",
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 60,
-    movementSpeed: number = 0,
+    movementSpeed: number = 13,
     private _hasShield: boolean = false,
   ) {
     super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, SHOOTING_DELAY);
