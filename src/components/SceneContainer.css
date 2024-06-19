@@ -1,16 +1,5 @@
-.projectTitle {
-  font-size: 1.5em;
-  text-align: center;
-  margin: 0.5em;
-  color: white;
-}
-
 .babylonCanvas {
-  width: 95%;
-}
-
-.canvasContainer {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
 }

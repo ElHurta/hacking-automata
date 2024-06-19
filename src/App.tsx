@@ -3,11 +3,7 @@ import SceneContainer from "./components/SceneContainer";
 import "./App.css";
 
 function App() {
-  return (
-    <>
-      <SceneContainer />
-    </>
-  );
+  return <SceneContainer />;
 }
 
 export default App;

@@ -23,6 +23,11 @@ export class AppManager {
 
   constructor(private canvas: HTMLCanvasElement) {
     this.engine = new Engine(this.canvas, true);
+
+    window.addEventListener("resize", () => {
+      this.engine.resize();
+    });
+
     this.levelFactory = new LevelFactory(this.engine);
     this.setGameData().then(() => {
       if (this._gameData) {

@@ -12,10 +12,5 @@ export default function SceneContainer() {
     new AppManager(canvas);
   }, [canvas]);
 
-  return (
-    <div className="canvasContainer">
-      <h3 className="projectTitle">Baby Nier Automata Minigame uwu</h3>
-      <canvas id="renderCanvas" className="babylonCanvas" />
-    </div>
-  );
+  return <canvas id="renderCanvas" className="babylonCanvas" />;
 }
