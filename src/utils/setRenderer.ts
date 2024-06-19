@@ -31,7 +31,7 @@ export function syncPositionSphere(
   if (mesh.collider?.collidedMesh) {
     entity.position.set(mesh.position.x, 15, mesh.position.z);
   }
-
+  
   mesh.moveWithCollisions(
     new Vector3(
       entity.position.x - mesh.position.x,

@@ -36,33 +36,34 @@ export default class EnemyController {
       scene,
       collisionDetector,
     ),
+    private entityManager = new YUKA.EntityManager(),
   ) {
-    this.createEnemies();
+    this.createEnemies()
+      .then(() => {
+        console.log("Enemies created", this.enemies);
+        this.createUpdateFunction();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   setupEnemyMovement(
     enemyObject: Enemy,
     playerMovingEntity: YUKA.MovingEntity,
   ): void {
-    const entityManager = new YUKA.EntityManager();
     const enemyVehicle = new YUKA.Vehicle();
-    entityManager.add(enemyVehicle);
 
     enemyVehicle.position.set(
       enemyObject.spawnPosition.x,
       enemyObject.spawnPosition.y,
       enemyObject.spawnPosition.z,
     );
-    console.log(enemyObject.spawnPosition, enemyVehicle.position);
+
+    enemyVehicle.maxSpeed = enemyObject.movementSpeed;
 
     const leftToRightPath = new YUKA.Path();
-    leftToRightPath.add(
-      new YUKA.Vector3(
-        enemyObject.spawnPosition.x,
-        enemyObject.spawnPosition.y,
-        enemyObject.spawnPosition.z,
-      ),
-    );
+
     leftToRightPath.add(
       new YUKA.Vector3(
         enemyObject.spawnPosition.x - 10,
@@ -70,6 +71,7 @@ export default class EnemyController {
         enemyObject.spawnPosition.z,
       ),
     );
+
     leftToRightPath.add(
       new YUKA.Vector3(
         enemyObject.spawnPosition.x + 10,
@@ -77,8 +79,8 @@ export default class EnemyController {
         enemyObject.spawnPosition.z,
       ),
     );
+
     leftToRightPath.loop = true;
-    enemyVehicle.maxSpeed = enemyObject.movementSpeed;
 
     // Set chaser behavior:
     if (enemyObject.name === "Chaser") {
@@ -87,8 +89,8 @@ export default class EnemyController {
         syncPositionDefault,
       );
 
-      const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
-      enemyVehicle.steering.add(seekBehavior);
+      const pathBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
+      enemyVehicle.steering.add(pathBehavior);
     }
 
     if (enemyObject.name === "Sphere") {
@@ -97,48 +99,13 @@ export default class EnemyController {
         syncPositionSphere,
       );
 
-      const pathBehavior = new YUKA.FollowPathBehavior(leftToRightPath);
+      enemyVehicle.position.copy(leftToRightPath.current());
+
+      const pathBehavior = new YUKA.FollowPathBehavior(leftToRightPath, 0.5);
       enemyVehicle.steering.add(pathBehavior);
     }
 
-    const time = new YUKA.Time();
-
-    const enemyUpdate = () => {
-      const delta = time.update().getDelta();
-      entityManager.update(delta);
-      enemyLifeCheck();
-
-      if (enemyObject.name === "Sphere") {
-        enemyObject.meshes[0].lookAt(
-          new Vector3(
-            playerMovingEntity.position.x,
-            playerMovingEntity.position.y,
-            playerMovingEntity.position.z,
-          ),
-        );
-      }
-    };
-
-    const enemyLifeCheck = () => {
-      if (enemyObject.lifePoints <= 0) {
-        this.scene.unregisterBeforeRender(
-          enemyObject.shootingFunction as () => void,
-        );
-        enemyObject.meshes.forEach((mesh) => {
-          mesh.dispose();
-        });
-        this.enemies = this.enemies.filter((enemy) => enemy !== enemyObject);
-        this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
-
-        if (this.enemies.length === 0) {
-          this.enemiesEliminatedObservable.notify();
-        }
-
-        return;
-      }
-    };
-
-    this.scene.onBeforeRenderObservable.add(enemyUpdate);
+    this.entityManager.add(enemyVehicle);
   }
 
   async loadEnemyMesh(enemyObject: Enemy): Promise<AbstractMesh[]> {
@@ -172,17 +139,18 @@ export default class EnemyController {
 
     enemyRootMesh.parent = enemyBox;
     enemyRootMesh.rotate(Vector3.Up(), Math.PI);
-    enemyBox.position = enemyObject.spawnPosition;
+    enemyBox.position.copyFrom(enemyObject.spawnPosition);
     enemyBox.rotationQuaternion = null;
 
     enemyBox.isVisible = false;
     enemyBox.isPickable = false;
     enemyBox.checkCollisions = true;
-
-    enemyBox.ellipsoid = new Vector3(
-      boundingBox.extendSizeWorld.x,
-      1,
-      boundingBox.extendSizeWorld.z,
+    enemyBox.lookAt(
+      new Vector3(
+        this.playerController.playerMovingEntity.position.x,
+        this.playerController.playerMovingEntity.position.y,
+        this.playerController.playerMovingEntity.position.z,
+      ),
     );
 
     return [enemyBox, ...meshes];
@@ -192,36 +160,85 @@ export default class EnemyController {
     enemyObject: Enemy,
     enemyProjectileController: ProjectileController,
   ): void {
-    const shootingFunc = () => {
-      if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
-        enemyObject.lastShotTime = Date.now();
-        enemyProjectileController.shootProjectile(
-          enemyObject.meshes[0],
-          this.projectileFactory.createProjectile(
-            projectileType.ENEMY,
-            enemyObject.meshes[0].forward.clone(),
-          ),
-        );
+    setTimeout(() => {
+      const shootingFunc = () => {
+        if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
+          enemyObject.lastShotTime = Date.now();
+          enemyProjectileController.shootProjectile(
+            enemyObject.meshes[0],
+            this.projectileFactory.createProjectile(
+              projectileType.ENEMY,
+              enemyObject.meshes[0].forward.clone(),
+            ),
+          );
+        }
+      };
+
+      enemyObject.shootingFunction = shootingFunc;
+
+      this.scene.registerBeforeRender(
+        enemyObject.shootingFunction as () => void,
+      );
+    }, 500);
+  }
+
+  async createEnemies(): Promise<void> {
+    this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
+
+    for (const enemy of this.enemies) {
+      const enemyMeshes = await this.loadEnemyMesh(enemy);
+
+      enemy.meshes = enemyMeshes;
+
+      this.setupEnemyMovement(enemy, this.playerController.playerMovingEntity);
+
+      this.setupEnemyShooting(enemy, this.projectileController);
+
+      this.collisionDetector.addSceneEntityToList(enemy);
+    }
+  }
+
+  createUpdateFunction(): void {
+    const time = new YUKA.Time();
+    const enemyUpdate = () => {
+      if (this.enemies.length === 0) {
+        this.enemiesEliminatedObservable.notify();
+        this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
+        return;
+      }
+
+      const delta = time.update().getDelta();
+      this.entityManager.update(delta);
+      enemiesLifeCheck();
+
+      // Additional logic for Sphere enemy:
+      for (const enemyObject of this.enemies) {
+        if (enemyObject.name === "Sphere") {
+          enemyObject.meshes[0].lookAt(
+            new Vector3(
+              this.playerController.playerMovingEntity.position.x,
+              this.playerController.playerMovingEntity.position.y,
+              this.playerController.playerMovingEntity.position.z,
+            ),
+          );
+        }
       }
     };
 
-    enemyObject.shootingFunction = shootingFunc;
+    const enemiesLifeCheck = () => {
+      for (const enemyObject of this.enemies) {
+        if (enemyObject.lifePoints <= 0) {
+          this.scene.unregisterBeforeRender(
+            enemyObject.shootingFunction as () => void,
+          );
+          enemyObject.meshes.forEach((mesh) => {
+            mesh.dispose();
+          });
+          this.enemies = this.enemies.filter((enemy) => enemy !== enemyObject);
+        }
+      }
+    };
 
-    this.scene.registerBeforeRender(enemyObject.shootingFunction as () => void);
-  }
-
-  createEnemies(): void {
-    this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
-    this.enemies.forEach((enemy) => {
-      this.loadEnemyMesh(enemy).then((enemyMeshes) => {
-        enemy.meshes = enemyMeshes;
-        this.setupEnemyMovement(
-          enemy,
-          this.playerController.playerMovingEntity,
-        );
-        this.setupEnemyShooting(enemy, this.projectileController);
-        this.collisionDetector.addSceneEntityToList(enemy);
-      });
-    });
+    this.scene.onBeforeRenderObservable.add(enemyUpdate);
   }
 }

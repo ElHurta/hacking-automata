@@ -48,21 +48,11 @@ export default class SceneWrapper {
       });
 
       this.scene.actionManager = new ActionManager(this.scene);
+
       this.playerController = new PlayerController(
         this.scene,
         this.collisionDetector,
       );
-
-      this.enemyController = new EnemyController(
-        this.scene,
-        this.playerController,
-        this.collisionDetector,
-        this.sceneData.enemies,
-      );
-
-      this.enemyController.enemiesEliminatedObservable.subscribe(() => {
-        this.goToLevelComplete();
-      });
 
       const camera = new ArcRotateCamera(
         "camera",
@@ -80,6 +70,17 @@ export default class SceneWrapper {
       this.CreateFakeGround();
 
       this.CreateLights();
+
+      this.enemyController = new EnemyController(
+        this.scene,
+        this.playerController,
+        this.collisionDetector,
+        this.sceneData.enemies,
+      );
+
+      this.enemyController.enemiesEliminatedObservable.subscribe(() => {
+        this.goToLevelComplete();
+      });
     });
   }
 

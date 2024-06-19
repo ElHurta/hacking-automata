@@ -12,8 +12,8 @@ export default class Sphere extends Enemy {
     concreteName: string,
     name: string = "Sphere",
     movingEntity: MovingEntity = new MovingEntity(),
-    lifePoints: number = 60,
-    movementSpeed: number = 13,
+    lifePoints: number = 20,
+    movementSpeed: number = 25,
     private _hasShield: boolean = false,
   ) {
     super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, SHOOTING_DELAY);
