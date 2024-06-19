@@ -17,6 +17,7 @@ export default class Enemy extends SceneEntity {
     protected _lastShotTime: number = 0,
   ) {
     super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
+    this.movingEntity.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
   }
 
   public get shootingFunction(): (() => void) | undefined {

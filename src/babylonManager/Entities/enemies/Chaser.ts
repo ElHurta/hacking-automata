@@ -12,7 +12,7 @@ export default class Chaser extends Enemy {
     concreteName : string,
     name = "Chaser",
     movingEntity: MovingEntity = new MovingEntity(),
-    lifePoints: number = 30,
+    lifePoints: number = 12,
     movementSpeed: number = 15,
     private _hasArmor: boolean = false,
   ) {

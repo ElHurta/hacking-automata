@@ -12,7 +12,7 @@ export default class Sphere extends Enemy {
     concreteName: string,
     name: string = "Sphere",
     movingEntity: MovingEntity = new MovingEntity(),
-    lifePoints: number = 20,
+    lifePoints: number = 10,
     movementSpeed: number = 25,
     private _hasShield: boolean = false,
   ) {
