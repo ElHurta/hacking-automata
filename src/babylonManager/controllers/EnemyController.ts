@@ -66,7 +66,7 @@ export default class EnemyController {
 
     leftToRightPath.add(
       new YUKA.Vector3(
-        enemyObject.spawnPosition.x - 10,
+        enemyObject.spawnPosition.x + 15,
         enemyObject.spawnPosition.y,
         enemyObject.spawnPosition.z,
       ),
@@ -74,7 +74,7 @@ export default class EnemyController {
 
     leftToRightPath.add(
       new YUKA.Vector3(
-        enemyObject.spawnPosition.x + 10,
+        enemyObject.spawnPosition.x - 15,
         enemyObject.spawnPosition.y,
         enemyObject.spawnPosition.z,
       ),
@@ -89,8 +89,8 @@ export default class EnemyController {
         syncPositionDefault,
       );
 
-      const pathBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
-      enemyVehicle.steering.add(pathBehavior);
+      const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
+      enemyVehicle.steering.add(seekBehavior);
     }
 
     if (enemyObject.name === "Sphere") {
@@ -98,8 +98,6 @@ export default class EnemyController {
         enemyObject.meshes[0],
         syncPositionSphere,
       );
-
-      enemyVehicle.position.copy(leftToRightPath.current());
 
       const pathBehavior = new YUKA.FollowPathBehavior(leftToRightPath, 0.5);
       enemyVehicle.steering.add(pathBehavior);
@@ -124,9 +122,9 @@ export default class EnemyController {
     );
 
     const enemyRootMesh = meshes[0];
-
+    
     const boundingBox = meshes[1].getBoundingInfo().boundingBox;
-
+    
     const enemyBox = MeshBuilder.CreateBox(
       "enemyBox",
       {
@@ -136,7 +134,7 @@ export default class EnemyController {
       },
       this.scene,
     );
-
+    
     enemyRootMesh.parent = enemyBox;
     enemyRootMesh.rotate(Vector3.Up(), Math.PI);
     enemyBox.position.copyFrom(enemyObject.spawnPosition);
@@ -153,6 +151,7 @@ export default class EnemyController {
       ),
     );
 
+    enemyObject.meshes = [enemyBox, ...meshes];
     return [enemyBox, ...meshes];
   }
 
@@ -160,39 +159,38 @@ export default class EnemyController {
     enemyObject: Enemy,
     enemyProjectileController: ProjectileController,
   ): void {
-    setTimeout(() => {
-      const shootingFunc = () => {
-        if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
-          enemyObject.lastShotTime = Date.now();
-          enemyProjectileController.shootProjectile(
-            enemyObject.meshes[0],
-            this.projectileFactory.createProjectile(
-              projectileType.ENEMY,
-              enemyObject.meshes[0].forward.clone(),
-            ),
-          );
-        }
-      };
+    const shootingFunc = () => {
+      if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
+        enemyObject.lastShotTime = Date.now();
+        enemyProjectileController.shootProjectile(
+          enemyObject.meshes[0],
+          this.projectileFactory.createProjectile(
+            projectileType.ENEMY,
+            enemyObject.meshes[0].forward.clone(),
+          ),
+        );
+      }
+    };
 
-      enemyObject.shootingFunction = shootingFunc;
+    enemyObject.shootingFunction = shootingFunc;
 
-      this.scene.registerBeforeRender(
-        enemyObject.shootingFunction as () => void,
-      );
-    }, 500);
+    this.scene.registerBeforeRender(enemyObject.shootingFunction as () => void);
   }
 
   async createEnemies(): Promise<void> {
     this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
 
     for (const enemy of this.enemies) {
-      const enemyMeshes = await this.loadEnemyMesh(enemy);
+      await this.loadEnemyMesh(enemy);
 
-      enemy.meshes = enemyMeshes;
+      setTimeout(() => {
+        this.setupEnemyMovement(
+          enemy,
+          this.playerController.playerMovingEntity,
+        );
 
-      this.setupEnemyMovement(enemy, this.playerController.playerMovingEntity);
-
-      this.setupEnemyShooting(enemy, this.projectileController);
+        this.setupEnemyShooting(enemy, this.projectileController);
+      }, 250);
 
       this.collisionDetector.addSceneEntityToList(enemy);
     }
@@ -203,6 +201,7 @@ export default class EnemyController {
     const enemyUpdate = () => {
       if (this.enemies.length === 0) {
         this.enemiesEliminatedObservable.notify();
+        this.entityManager.clear();
         this.scene.onBeforeRenderObservable.removeCallback(enemyUpdate);
         return;
       }
