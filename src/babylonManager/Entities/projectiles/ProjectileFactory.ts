@@ -12,8 +12,10 @@ export default class ProjectileFactory {
     switch (projectileOption) {
       case projectileType.PLAYER:
         return new PlayerProjectile(projectileDirection);
-      case projectileType.ENEMY:
-        return new EnemyProjectile(projectileDirection);
+      case projectileType.ENEMY_DESTRUCTIBLE:
+        return new EnemyProjectile(projectileDirection, "desBullet01.glb", true);
+      case projectileType.ENEMY_INDESTRUCTIBLE:
+        return new EnemyProjectile(projectileDirection, "noDesBullet01.glb", false);
       default:
         throw new Error("Invalid projectile type");
     }

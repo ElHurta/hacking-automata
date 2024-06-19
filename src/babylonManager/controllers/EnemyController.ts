@@ -168,7 +168,7 @@ export default class EnemyController {
         enemyProjectileController.shootProjectile(
           enemyObject.meshes[0],
           this.projectileFactory.createProjectile(
-            projectileType.ENEMY,
+            projectileType.ENEMY_DESTRUCTIBLE,
             enemyObject.meshes[0].forward.clone(),
           ),
         );

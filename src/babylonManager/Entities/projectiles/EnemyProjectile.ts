@@ -8,13 +8,17 @@ const IS_DESTRUCTIBLE = true;
 const IS_PLAYER_PROJECTILE = false;
 
 export default class EnemyProjectile extends Projectile {
-  constructor(projectileDirection: Vector3) {
+  constructor(
+    projectileDirection: Vector3,
+    meshName: string = MESH_NAME,
+    isDestructible: boolean = IS_DESTRUCTIBLE,
+  ) {
     super(
-      MESH_NAME,
+      meshName,
       TRAVEL_SPEED,
       projectileDirection,
       DAMAGE,
-      IS_DESTRUCTIBLE,
+      isDestructible,
       IS_PLAYER_PROJECTILE,
     );
   }

@@ -1,4 +1,5 @@
 export enum projectileType {
   PLAYER = "player",
-  ENEMY = "enemy",
+  ENEMY_DESTRUCTIBLE = "enemyDestructible",
+  ENEMY_INDESTRUCTIBLE = "enemyIndestructible",
 }
