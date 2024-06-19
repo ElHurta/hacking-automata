@@ -108,10 +108,13 @@ export default class EnemyController {
 
   async loadEnemyMesh(enemyObject: Enemy): Promise<AbstractMesh[]> {
     let meshName = "";
-    if (enemyObject.name === "Chaser") {
-      meshName = import.meta.env.VITE_CHASER_ENEMY_MODEL;
-    } else if (enemyObject.name === "Sphere") {
-      meshName = import.meta.env.VITE_SPHERE_ENEMY_MODEL;
+    switch (enemyObject.name) {
+      case "Chaser":
+        meshName = import.meta.env.VITE_CHASER_ENEMY_MODEL;
+        break;
+      case "Sphere":
+        meshName = import.meta.env.VITE_SPHERE_ENEMY_MODEL;
+        break;
     }
 
     const { meshes } = await SceneLoader.ImportMeshAsync(
