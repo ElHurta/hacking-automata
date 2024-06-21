@@ -1,6 +1,7 @@
 import { AbstractMesh, Vector3 } from "@babylonjs/core";
 import SceneEntity from "../SceneEntity";
 import { MovingEntity } from "yuka";
+import { projectileType } from "../../../enums/projectileType.enum";
 
 export default class Enemy extends SceneEntity {
   protected shootingFunc: (() => void) | undefined;
@@ -14,6 +15,7 @@ export default class Enemy extends SceneEntity {
     lifePoints: number = 30,
     movementSpeed: number = 30,
     protected _shootingPattern: string,
+    protected _projectileType: projectileType,
     protected _shootingDelay: number,
     protected _lastShotTime: number = 0,
   ) {
@@ -59,5 +61,9 @@ export default class Enemy extends SceneEntity {
 
   public set shootingPattern(pattern: string) {
     this._shootingPattern = pattern;
+  }
+
+  public get projectileType(): projectileType {
+    return this._projectileType;
   }
 }

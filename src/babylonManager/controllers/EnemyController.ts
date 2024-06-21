@@ -14,11 +14,11 @@ import {
 import CollisionDetector from "../core/CollisionDetector";
 import ProjectileController from "./ProjectileController";
 import ProjectileFactory from "../entities/projectiles/ProjectileFactory";
-import { projectileType } from "../../enums/projectileType.enum";
 import EnemyFactory from "../entities/enemies/EnemyFactory";
 import Enemy from "../entities/enemies/Enemy";
 import { EnemyData } from "../../interfaces/gameData.interface";
 import Observable from "../../utils/Observable";
+import { shootingPatterns } from "../../enums/shootingPatterns.enum";
 
 export default class EnemyController {
   private projectileFactory = new ProjectileFactory();
@@ -168,7 +168,9 @@ export default class EnemyController {
   }
 
   async createEnemies(): Promise<void> {
+    console.log("Creating enemies...", this.enemiesData);
     this.enemies = this.enemyFactory.createEnemiesByList(this.enemiesData);
+    console.log("Enemies created", this.enemies);
 
     for (const enemy of this.enemies) {
       await this.loadEnemyMesh(enemy);
@@ -185,7 +187,7 @@ export default class EnemyController {
 
   createShootingFunction(enemyObject: Enemy): () => void {
     switch (enemyObject.shootingPattern) {
-      case "singleDesProjectile":
+      case shootingPatterns.SINGLE:
         return () => {
           if (
             Date.now() - enemyObject.lastShotTime >
@@ -195,31 +197,14 @@ export default class EnemyController {
             this.projectileController.shootProjectile(
               enemyObject.meshes[0],
               this.projectileFactory.createProjectile(
-                projectileType.ENEMY_DESTRUCTIBLE,
-                enemyObject.meshes[0].forward.clone(),
-              ),
-            );
-          }
-        };
-        
-      case "singleNoDesProjectile":
-        return () => {
-          if (
-            Date.now() - enemyObject.lastShotTime >
-            enemyObject.shootingDelay
-          ) {
-            enemyObject.lastShotTime = Date.now();
-            this.projectileController.shootProjectile(
-              enemyObject.meshes[0],
-              this.projectileFactory.createProjectile(
-                projectileType.ENEMY_INDESTRUCTIBLE,
+                enemyObject.projectileType,
                 enemyObject.meshes[0].forward.clone(),
               ),
             );
           }
         };
 
-      case "fourDesProjectiles":
+      case shootingPatterns.CUADRUPLE:
         return () => {
           if (
             Date.now() - enemyObject.lastShotTime >
@@ -236,7 +221,7 @@ export default class EnemyController {
             this.projectileController.shootProjectile(
               enemyObject.meshes[0],
               this.projectileFactory.createProjectile(
-                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.projectileType,
                 enemyObject.meshes[0].forward.clone(),
               ),
             );
@@ -244,7 +229,7 @@ export default class EnemyController {
             this.projectileController.shootProjectile(
               enemyObject.meshes[0],
               this.projectileFactory.createProjectile(
-                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.projectileType,
                 enemyObject.meshes[0].forward.clone().negate(),
               ),
             );
@@ -252,7 +237,7 @@ export default class EnemyController {
             this.projectileController.shootProjectile(
               enemyObject.meshes[0],
               this.projectileFactory.createProjectile(
-                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.projectileType,
                 rotatedVector,
               ),
             );
@@ -260,7 +245,7 @@ export default class EnemyController {
             this.projectileController.shootProjectile(
               enemyObject.meshes[0],
               this.projectileFactory.createProjectile(
-                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.projectileType,
                 rotatedVector.negate(),
               ),
             );

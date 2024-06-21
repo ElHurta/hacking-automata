@@ -7,6 +7,8 @@
         {
           "name": "chaser",
           "concreteName": "chaser1",
+          "projectileType": "enemyDestructible",
+          "shootingPattern": "single",
           "spawnPosX": 50,
           "spawnPosY": 15,
           "spawnPosZ": 25
@@ -14,6 +16,8 @@
         {
           "name": "chaser",
           "concreteName": "chaser2",
+          "projectileType": "enemyDestructible",
+          "shootingPattern": "single",
           "spawnPosX": -50,
           "spawnPosY": 15,
           "spawnPosZ": 25
@@ -21,6 +25,8 @@
         {
           "name": "chaser",
           "concreteName": "chaser3",
+          "projectileType": "enemyDestructible",
+          "shootingPattern": "single",
           "spawnPosX": -75,
           "spawnPosY": 15,
           "spawnPosZ": 40
@@ -39,6 +45,8 @@
         {
           "name": "sphere",
           "concreteName": "sphere1",
+          "projectileType": "enemyIndestructible",
+          "shootingPattern": "cuadruple",
           "spawnPosX": 0,
           "spawnPosY": 15,
           "spawnPosZ": 25
