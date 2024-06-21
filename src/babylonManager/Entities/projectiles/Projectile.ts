@@ -53,4 +53,8 @@ export default abstract class Projectile {
   set movementFunc(func: () => void) {
     this._movementFunc = func;
   }
+
+  get isDestructible(): boolean {
+    return this._destructible;
+  }
 }

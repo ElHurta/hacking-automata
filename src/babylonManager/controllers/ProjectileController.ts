@@ -24,10 +24,20 @@ export default class ProjectileController {
     shooter: AbstractMesh,
     projectile: Projectile,
   ): Promise<AbstractMesh> {
+    let projectileMeshName = projectile.meshName;
+
+    if (!projectile.isPlayerProjectile) {
+      projectileMeshName = "noDesBullet01.glb";
+
+      if (projectile.isDestructible) {
+        projectileMeshName = "desBullet01.glb";
+      }
+    }
+
     const { meshes } = await SceneLoader.ImportMeshAsync(
       null,
       import.meta.env.VITE_MODELS_PATH,
-      projectile.meshName,
+      projectileMeshName,
       this.scene,
     );
 

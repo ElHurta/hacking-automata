@@ -40,7 +40,6 @@ export default class EnemyController {
   ) {
     this.createEnemies()
       .then(() => {
-        console.log("Enemies created", this.enemies);
         this.createUpdateFunction();
       })
       .catch((error) => {
@@ -48,10 +47,7 @@ export default class EnemyController {
       });
   }
 
-  setupEnemyMovement(
-    enemyObject: Enemy,
-    playerMovingEntity: YUKA.MovingEntity,
-  ): void {
+  setupEnemyMovement(enemyObject: Enemy): void {
     const enemyVehicle = new YUKA.Vehicle();
 
     enemyVehicle.position.set(
@@ -89,7 +85,9 @@ export default class EnemyController {
         syncPositionDefault,
       );
 
-      const seekBehavior = new YUKA.SeekBehavior(playerMovingEntity.position);
+      const seekBehavior = new YUKA.SeekBehavior(
+        this.playerController.playerMovingEntity.position,
+      );
       enemyVehicle.steering.add(seekBehavior);
     }
 
@@ -125,9 +123,9 @@ export default class EnemyController {
     );
 
     const enemyRootMesh = meshes[0];
-    
+
     const boundingBox = meshes[1].getBoundingInfo().boundingBox;
-    
+
     const enemyBox = MeshBuilder.CreateBox(
       "enemyBox",
       {
@@ -137,7 +135,7 @@ export default class EnemyController {
       },
       this.scene,
     );
-    
+
     enemyRootMesh.parent = enemyBox;
     enemyRootMesh.rotate(Vector3.Up(), Math.PI);
     enemyBox.position.copyFrom(enemyObject.spawnPosition);
@@ -158,26 +156,15 @@ export default class EnemyController {
     return [enemyBox, ...meshes];
   }
 
-  setupEnemyShooting(
-    enemyObject: Enemy,
-    enemyProjectileController: ProjectileController,
-  ): void {
-    const shootingFunc = () => {
-      if (Date.now() - enemyObject.lastShotTime > enemyObject.shootingDelay) {
-        enemyObject.lastShotTime = Date.now();
-        enemyProjectileController.shootProjectile(
-          enemyObject.meshes[0],
-          this.projectileFactory.createProjectile(
-            projectileType.ENEMY_DESTRUCTIBLE,
-            enemyObject.meshes[0].forward.clone(),
-          ),
-        );
-      }
-    };
+  setupEnemyShooting(enemyObject: Enemy): void {
+    const shootingFunc = this.createShootingFunction(enemyObject);
 
     enemyObject.shootingFunction = shootingFunc;
+    const isVoidFunction = enemyObject.shootingFunction instanceof Function;
 
-    this.scene.registerBeforeRender(enemyObject.shootingFunction as () => void);
+    if (!isVoidFunction || !enemyObject.shootingFunction) return;
+
+    this.scene.registerBeforeRender(enemyObject.shootingFunction);
   }
 
   async createEnemies(): Promise<void> {
@@ -187,15 +174,101 @@ export default class EnemyController {
       await this.loadEnemyMesh(enemy);
 
       setTimeout(() => {
-        this.setupEnemyMovement(
-          enemy,
-          this.playerController.playerMovingEntity,
-        );
+        this.setupEnemyMovement(enemy);
 
-        this.setupEnemyShooting(enemy, this.projectileController);
+        this.setupEnemyShooting(enemy);
       }, 250);
 
       this.collisionDetector.addSceneEntityToList(enemy);
+    }
+  }
+
+  createShootingFunction(enemyObject: Enemy): () => void {
+    switch (enemyObject.shootingPattern) {
+      case "singleDesProjectile":
+        return () => {
+          if (
+            Date.now() - enemyObject.lastShotTime >
+            enemyObject.shootingDelay
+          ) {
+            enemyObject.lastShotTime = Date.now();
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.meshes[0].forward.clone(),
+              ),
+            );
+          }
+        };
+        
+      case "singleNoDesProjectile":
+        return () => {
+          if (
+            Date.now() - enemyObject.lastShotTime >
+            enemyObject.shootingDelay
+          ) {
+            enemyObject.lastShotTime = Date.now();
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_INDESTRUCTIBLE,
+                enemyObject.meshes[0].forward.clone(),
+              ),
+            );
+          }
+        };
+
+      case "fourDesProjectiles":
+        return () => {
+          if (
+            Date.now() - enemyObject.lastShotTime >
+            enemyObject.shootingDelay
+          ) {
+            enemyObject.lastShotTime = Date.now();
+
+            const rotatedVector = new Vector3(
+              enemyObject.meshes[0].forward.negate().z,
+              enemyObject.meshes[0].forward.y,
+              enemyObject.meshes[0].forward.x,
+            );
+
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.meshes[0].forward.clone(),
+              ),
+            );
+
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_DESTRUCTIBLE,
+                enemyObject.meshes[0].forward.clone().negate(),
+              ),
+            );
+
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_DESTRUCTIBLE,
+                rotatedVector,
+              ),
+            );
+
+            this.projectileController.shootProjectile(
+              enemyObject.meshes[0],
+              this.projectileFactory.createProjectile(
+                projectileType.ENEMY_DESTRUCTIBLE,
+                rotatedVector.negate(),
+              ),
+            );
+          }
+        };
+
+      default:
+        throw new Error("Invalid shooting pattern");
     }
   }
 
@@ -230,9 +303,12 @@ export default class EnemyController {
     const enemiesLifeCheck = () => {
       for (const enemyObject of this.enemies) {
         if (enemyObject.lifePoints <= 0) {
-          this.scene.unregisterBeforeRender(
-            enemyObject.shootingFunction as () => void,
-          );
+          const isVoidFunction =
+            enemyObject.shootingFunction instanceof Function;
+          if (!isVoidFunction || !enemyObject.shootingFunction) return;
+
+          this.scene.unregisterBeforeRender(enemyObject.shootingFunction);
+
           enemyObject.meshes.forEach((mesh) => {
             mesh.dispose();
           });

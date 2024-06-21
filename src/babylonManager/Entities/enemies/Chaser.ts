@@ -14,9 +14,10 @@ export default class Chaser extends Enemy {
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 12,
     movementSpeed: number = 15,
+    shootingPattern: string = "singleDesProjectile",
     private _hasArmor: boolean = false,
   ) {
-    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, SHOOTING_DELAY);
+    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, shootingPattern, SHOOTING_DELAY);
   }
 
   public get hasArmor(): boolean {

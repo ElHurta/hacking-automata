@@ -3,8 +3,8 @@ import SceneEntity from "../SceneEntity";
 import { MovingEntity } from "yuka";
 
 export default class Enemy extends SceneEntity {
-  protected shootingFunc : (() => void) | undefined;
-  
+  protected shootingFunc: (() => void) | undefined;
+
   constructor(
     name: string,
     concreteName: string,
@@ -13,11 +13,24 @@ export default class Enemy extends SceneEntity {
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 30,
     movementSpeed: number = 30,
+    protected _shootingPattern: string,
     protected _shootingDelay: number,
     protected _lastShotTime: number = 0,
   ) {
-    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed);
-    this.movingEntity.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
+    super(
+      name,
+      concreteName,
+      meshes,
+      spawnPosition,
+      movingEntity,
+      lifePoints,
+      movementSpeed,
+    );
+    this.movingEntity.position.set(
+      spawnPosition.x,
+      spawnPosition.y,
+      spawnPosition.z,
+    );
   }
 
   public get shootingFunction(): (() => void) | undefined {
@@ -38,5 +51,13 @@ export default class Enemy extends SceneEntity {
 
   public set lastShotTime(time: number) {
     this._lastShotTime = time;
+  }
+
+  public get shootingPattern(): string {
+    return this._shootingPattern;
+  }
+
+  public set shootingPattern(pattern: string) {
+    this._shootingPattern = pattern;
   }
 }

@@ -14,9 +14,10 @@ export default class Sphere extends Enemy {
     movingEntity: MovingEntity = new MovingEntity(),
     lifePoints: number = 10,
     movementSpeed: number = 25,
+    shootingPattern: string = "singleNoDesProjectile",
     private _hasShield: boolean = false,
   ) {
-    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, SHOOTING_DELAY);
+    super(name, concreteName, meshes, spawnPosition, movingEntity, lifePoints, movementSpeed, shootingPattern, SHOOTING_DELAY);
   }
 
   public get hasShield(): boolean {

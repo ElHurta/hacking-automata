@@ -92,7 +92,8 @@ export default class CollisionDetector {
           if (
             projectile.mesh.intersectsMesh(otherProjectile.mesh, true) &&
             projectile !== otherProjectile &&
-            !otherProjectile.isPlayerProjectile
+            !otherProjectile.isPlayerProjectile &&
+            otherProjectile.isDestructible
           ) {
             this.disposeProjectile(projectile);
             this.disposeProjectile(otherProjectile);
