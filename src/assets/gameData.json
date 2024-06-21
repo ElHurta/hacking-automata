@@ -46,7 +46,7 @@
           "name": "sphere",
           "concreteName": "sphere1",
           "projectileType": "enemyIndestructible",
-          "shootingPattern": "cuadruple",
+          "shootingPattern": "single",
           "spawnPosX": 0,
           "spawnPosY": 15,
           "spawnPosZ": 25
